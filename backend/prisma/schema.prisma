@@ -1,0 +1,181 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      String   @default("admin")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("users")
+}
+
+model Profile {
+  id             String   @id @default(uuid())
+  name           String
+  profession     String
+  professionEn   String?  @map("profession_en")
+  bio            String   @db.Text
+  bioEn          String?  @db.Text @map("bio_en")
+  aboutText      String   @db.Text @map("about_text")
+  aboutTextEn    String?  @db.Text @map("about_text_en")
+  profileImage   String?  @map("profile_image")
+  aboutImage     String?  @map("about_image")
+  cvUrl          String?  @map("cv_url")
+  email          String?
+  phone          String?
+  location       String?
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("profiles")
+}
+
+model Project {
+  id           String              @id @default(uuid())
+  title        String
+  titleEn      String?             @map("title_en")
+  slug         String              @unique
+  image        String?
+  category     String
+  description  String              @db.Text
+  descriptionEn String?            @db.Text @map("description_en")
+  features     String?             @db.Text
+  featuresEn   String?             @db.Text @map("features_en")
+  challenge    String?             @db.Text
+  challengeEn  String?             @db.Text @map("challenge_en")
+  solution     String?             @db.Text
+  solutionEn   String?             @db.Text @map("solution_en")
+
+  githubUrl    String?             @map("github_url")
+  demoUrl      String?             @map("demo_url")
+  featured     Boolean             @default(false)
+  createdAt    DateTime            @default(now()) @map("created_at")
+  updatedAt    DateTime            @updatedAt @map("updated_at")
+  technologies ProjectTechnology[]
+
+  @@map("projects")
+}
+
+model ProjectTechnology {
+  id         String  @id @default(uuid())
+  projectId  String  @map("project_id")
+  technology String
+  project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_technologies")
+}
+
+model Education {
+  id          String   @id @default(uuid())
+  institution String
+  degree      String
+  degreeEn    String?  @map("degree_en")
+  startDate   String   @map("start_date")
+  endDate     String?  @map("end_date")
+  description String?  @db.Text
+  descriptionEn String? @db.Text @map("description_en")
+  logo        String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("education")
+}
+
+model Skill {
+  id         String   @id @default(uuid())
+  name       String
+  category   String
+  percentage Int      @default(80)
+  icon       String?
+  order      Int      @default(0)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("skills")
+}
+
+model Certificate {
+  id            String   @id @default(uuid())
+  title         String
+  titleEn       String?  @map("title_en")
+  issuer        String
+  image         String?
+  date          String
+  credentialUrl String?  @map("credential_url")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("certificates")
+}
+
+model SocialMedia {
+  id       String @id @default(uuid())
+  platform String @unique
+  url      String
+  icon     String?
+
+  @@map("social_media")
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  message   String   @db.Text
+  status    String   @default("unread")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("messages")
+}
+
+model Visitor {
+  id        String   @id @default(uuid())
+  ip        String?
+  userAgent String?  @map("user_agent")
+  page      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("visitors")
+}
+
+model Experience {
+  id           String            @id @default(uuid())
+  type         String            @default("work") // "work" | "organization"
+  organization String            // Nama Perusahaan / Nama Organisasi
+  institution  String?           // Nama Univ / Instansi
+  role         String            // Nama Jabatan
+  roleEn       String?           @map("role_en")
+  startDate    String            @map("start_date")
+  endDate      String?           @map("end_date")
+  description  String?           @db.Text
+  descriptionEn String?          @db.Text @map("description_en")
+  order        Int               @default(0)
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+  photos       ExperiencePhoto[]
+
+  @@map("experiences")
+}
+
+model ExperiencePhoto {
+  id           String     @id @default(uuid())
+  experienceId String     @map("experience_id")
+  url          String     @db.Text
+  caption      String?
+  captionEn    String?    @map("caption_en")
+  experience   Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+
+  @@map("experience_photos")
+}
+
