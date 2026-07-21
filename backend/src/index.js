@@ -76,6 +76,15 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+// Welcome route
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Welcome to Irfan Sopandi Portfolio API',
+    health: '/api/health',
+    status: 'online'
+  });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ 
