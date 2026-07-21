@@ -44,10 +44,12 @@ const createMessage = async (req, res) => {
     data: { name, email, message, status: 'unread' },
   });
 
-  // Kirim Telegram Notification secara async
-  sendTelegramNotification({ name, email, message }).catch(err => {
+  // Kirim Telegram Notification
+  try {
+    await sendTelegramNotification({ name, email, message });
+  } catch (err) {
     console.error('Failed to send Telegram notification:', err.message);
-  });
+  }
 
   res.status(201).json({ 
     message: 'Pesan berhasil dikirim. Saya akan segera menghubungi Anda!',
