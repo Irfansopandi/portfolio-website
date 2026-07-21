@@ -136,12 +136,16 @@ async function main() {
   }
   console.log('✅ Skills processed');
 
+  // Clean up LinkedIn if exists
+  await prisma.socialMedia.deleteMany({
+    where: { platform: 'LinkedIn' }
+  });
+
   // Create social media
   const socials = [
-    { platform: 'GitHub', url: 'https://github.com/irfansopandi', icon: 'github' },
-    { platform: 'LinkedIn', url: 'https://linkedin.com/in/irfansopandi', icon: 'linkedin' },
-    { platform: 'Instagram', url: 'https://instagram.com/irfansopandi', icon: 'instagram' },
-    { platform: 'WhatsApp', url: 'https://wa.me/6281234567890', icon: 'whatsapp' },
+    { platform: 'GitHub', url: 'https://github.com/Irfansopandi/', icon: 'github' },
+    { platform: 'Instagram', url: 'https://www.instagram.com/irfan_sopandi_/', icon: 'instagram' },
+    { platform: 'WhatsApp', url: 'https://wa.me/6285946653103', icon: 'whatsapp' },
   ];
 
   for (const social of socials) {

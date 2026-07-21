@@ -60,14 +60,14 @@ const localStorage = {
 
 const createStorage = (folder) => {
   if (isCloudinaryConfigured) {
+    const isCv = folder === 'cv';
     return new CloudinaryStorage({
       cloudinary,
       params: {
         folder: `portfolio/${folder}`,
-        allowed_formats: folder === 'cv' 
-          ? ['pdf', 'doc', 'docx']
-          : ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-        transformation: folder === 'cv' ? undefined : [{ quality: 'auto', fetch_format: 'auto' }],
+        resource_type: isCv ? 'raw' : 'image',
+        allowed_formats: isCv ? undefined : ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+        transformation: isCv ? undefined : [{ quality: 'auto', fetch_format: 'auto' }],
       },
     });
   }
