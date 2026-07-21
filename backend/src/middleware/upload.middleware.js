@@ -60,14 +60,21 @@ const localStorage = {
 
 const createStorage = (folder) => {
   if (isCloudinaryConfigured) {
-    const isCv = folder === 'cv';
     return new CloudinaryStorage({
       cloudinary,
-      params: {
-        folder: `portfolio/${folder}`,
-        resource_type: isCv ? 'raw' : 'image',
-        allowed_formats: isCv ? undefined : ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-        transformation: isCv ? undefined : [{ quality: 'auto', fetch_format: 'auto' }],
+      params: async (req, file) => {
+        const isCv = folder === 'cv';
+        const ext = path.extname(file.originalname).toLowerCase();
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const nameWithoutExt = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9_-]/g, '_');
+        
+        return {
+          folder: `portfolio/${folder}`,
+          resource_type: isCv ? 'raw' : 'image',
+          public_id: isCv ? `${nameWithoutExt}-${uniqueSuffix}${ext}` : `${nameWithoutExt}-${uniqueSuffix}`,
+          allowed_formats: isCv ? undefined : ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+          transformation: isCv ? undefined : [{ quality: 'auto', fetch_format: 'auto' }],
+        };
       },
     });
   }
