@@ -382,38 +382,41 @@ const HomePage = () => {
                 <div className="h-px flex-1 max-w-8" style={{ background: 'rgba(255,255,255,0.1)' }} />
                 <div className="flex gap-2.5 sm:gap-3">
                   {socials.length > 0 ? (
-                    socials.map((social) => {
-                      const Icon = socialIcons[social.platform] || Github;
-                      return (
-                        <motion.a
-                          key={social.id}
-                          href={social.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 hover:text-white transition-all duration-300 social-icon-btn social-icon-${social.platform.toLowerCase()}`}
-                          style={{
-                            background: 'rgba(255,255,255,0.05)',
-                            border: '1px solid rgba(255,255,255,0.08)',
-                          } as any}
-                          whileHover={{ scale: 1.15, y: -2 }}
-                          whileTap={{ scale: 0.95 }}
-                          aria-label={social.platform}
-                        >
-                          <Icon size={18} />
-                        </motion.a>
-                      );
-                    })
+                    socials
+                      .filter((social) => social.url && social.url !== '#' && social.url.trim() !== '')
+                      .map((social) => {
+                        const Icon = socialIcons[social.platform] || Github;
+                        return (
+                          <motion.a
+                            key={social.id}
+                            href={social.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 hover:text-white transition-all duration-300 social-icon-btn social-icon-${social.platform.toLowerCase()}`}
+                            style={{
+                              background: 'rgba(255,255,255,0.05)',
+                              border: '1px solid rgba(255,255,255,0.08)',
+                            } as any}
+                            whileHover={{ scale: 1.15, y: -2 }}
+                            whileTap={{ scale: 0.95 }}
+                            aria-label={social.platform}
+                          >
+                            <Icon size={18} />
+                          </motion.a>
+                        );
+                      })
                   ) : (
                     <>
                       {[
-                        { Icon: Github, platform: 'github' },
-                        { Icon: Linkedin, platform: 'linkedin' },
-                        { Icon: Instagram, platform: 'instagram' },
-                        { Icon: MessageCircle, platform: 'whatsapp' }
-                      ].map(({ Icon, platform }, i) => (
+                        { Icon: Github, platform: 'github', href: 'https://github.com/Irfansopandi/' },
+                        { Icon: Instagram, platform: 'instagram', href: 'https://www.instagram.com/irfan_sopandi_/' },
+                        { Icon: MessageCircle, platform: 'whatsapp', href: 'https://wa.me/6285946653103' }
+                      ].map(({ Icon, platform, href }, i) => (
                         <motion.a
                           key={i}
-                          href="#"
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className={`w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 hover:text-white transition-all duration-300 social-icon-btn social-icon-${platform}`}
                           style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' } as any}
                           whileHover={{ scale: 1.15, y: -2 }}

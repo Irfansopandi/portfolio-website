@@ -1,9 +1,19 @@
 import { Link } from 'react-router-dom';
 import { Github, Linkedin, Instagram, MessageCircle, Heart, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'react';
+import { socialService } from '../services';
+import type { SocialMedia } from '../types';
 
 const Footer = () => {
   const { t } = useTranslation();
+  const [socials, setSocials] = useState<SocialMedia[]>([]);
+
+  useEffect(() => {
+    socialService.getAll()
+      .then((res) => setSocials(res.data))
+      .catch((err) => console.error('Failed to fetch socials in footer:', err));
+  }, []);
 
   const navLinks = [
     { path: '/', labelKey: 'navbar.home' },
@@ -14,11 +24,18 @@ const Footer = () => {
     { path: '/contact', labelKey: 'navbar.contact' },
   ];
 
-  const socialLinks = [
-    { icon: Github, href: 'https://github.com/irfansopandi', label: 'GitHub', platform: 'github' },
-    { icon: Linkedin, href: 'https://linkedin.com/in/irfansopandi', label: 'LinkedIn', platform: 'linkedin' },
-    { icon: Instagram, href: 'https://instagram.com/irfansopandi', label: 'Instagram', platform: 'instagram' },
-    { icon: MessageCircle, href: 'https://wa.me/6281234567890', label: 'WhatsApp', platform: 'whatsapp' },
+  const socialIconMap: Record<string, any> = {
+    GitHub: Github,
+    LinkedIn: Linkedin,
+    Instagram: Instagram,
+    WhatsApp: MessageCircle,
+  };
+
+  const defaultSocialLinks = [
+    { icon: Github, href: 'https://github.com/Irfansopandi/', label: 'GitHub', platform: 'github' },
+    { icon: Linkedin, href: '#', label: 'LinkedIn', platform: 'linkedin' },
+    { icon: Instagram, href: 'https://www.instagram.com/irfan_sopandi_/', label: 'Instagram', platform: 'instagram' },
+    { icon: MessageCircle, href: 'https://wa.me/6285946653103', label: 'WhatsApp', platform: 'whatsapp' },
   ];
 
   return (
@@ -64,22 +81,48 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold text-white mb-4">{t('footer.connect')}</h4>
             <div className="flex gap-3">
-              {socialLinks.map(({ icon: Icon, href, label, platform }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 hover:text-white transition-all duration-300 hover:scale-110 social-icon-btn social-icon-${platform}`}
-                  style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                  }}
-                  aria-label={label}
-                >
-                  <Icon size={18} />
-                </a>
-              ))}
+              {socials.length > 0 ? (
+                socials
+                  .filter((social) => social.url && social.url !== '#' && social.url.trim() !== '')
+                  .map((social) => {
+                    const Icon = socialIconMap[social.platform] || Github;
+                    return (
+                      <a
+                        key={social.platform}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 hover:text-white transition-all duration-300 hover:scale-110 social-icon-btn social-icon-${social.platform.toLowerCase()}`}
+                        style={{
+                          background: 'rgba(255,255,255,0.05)',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                        }}
+                        aria-label={social.platform}
+                      >
+                        <Icon size={18} />
+                      </a>
+                    );
+                  })
+              ) : (
+                defaultSocialLinks
+                  .filter((link) => link.href && link.href !== '#' && link.href.trim() !== '')
+                  .map(({ icon: Icon, href, label, platform }) => (
+                    <a
+                      key={label}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 hover:text-white transition-all duration-300 hover:scale-110 social-icon-btn social-icon-${platform}`}
+                      style={{
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                      }}
+                      aria-label={label}
+                    >
+                      <Icon size={18} />
+                    </a>
+                  ))
+              )}
             </div>
             <p className="text-gray-500 text-sm mt-4 flex items-center gap-1.5">
               <MapPin size={14} className="text-indigo-400" /> Karawang, Indonesia

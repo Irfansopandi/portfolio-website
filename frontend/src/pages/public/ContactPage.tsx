@@ -108,23 +108,25 @@ const ContactPage = () => {
             <div>
               <h3 className="text-white font-semibold mb-4">Follow Me</h3>
               <div className="flex gap-3">
-                {socials.map((social) => {
-                  const Icon = socialIconMap[social.platform] || Github;
-                  return (
-                    <motion.a
-                      key={social.id}
-                      href={social.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center text-gray-400 hover:text-white transition-all duration-300 social-icon-btn social-icon-${social.platform.toLowerCase()}`}
-                      style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' } as any}
-                      whileHover={{ scale: 1.1, y: -3 }}
-                      aria-label={social.platform}
-                    >
-                      <Icon size={20} />
-                    </motion.a>
-                  );
-                })}
+                {socials
+                  .filter((social) => social.url && social.url !== '#' && social.url.trim() !== '')
+                  .map((social) => {
+                    const Icon = socialIconMap[social.platform] || Github;
+                    return (
+                      <motion.a
+                        key={social.id}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center text-gray-400 hover:text-white transition-all duration-300 social-icon-btn social-icon-${social.platform.toLowerCase()}`}
+                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' } as any}
+                        whileHover={{ scale: 1.1, y: -3 }}
+                        aria-label={social.platform}
+                      >
+                        <Icon size={20} />
+                      </motion.a>
+                    );
+                  })}
               </div>
             </div>
           </motion.div>
