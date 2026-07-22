@@ -10,7 +10,7 @@ const { authenticate } = require('../middleware/auth.middleware');
 const { uploadImage } = require('../middleware/upload.middleware');
 
 const handleExperienceUpload = (req, res, next) => {
-  uploadImage('experiences').array('photos', 10)(req, res, (err) => {
+  uploadImage('experiences').array('newPhotos', 10)(req, res, (err) => {
     if (err) {
       if (err.code === 'LIMIT_FILE_SIZE') {
         return res.status(400).json({ error: 'Ukuran file foto maksimal 10MB per foto.' });

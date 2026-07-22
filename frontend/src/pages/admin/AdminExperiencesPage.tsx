@@ -208,7 +208,7 @@ const AdminExperiencesPage = () => {
 
       // Append new photo files
       photoFiles.forEach(item => {
-        fd.append('photos', item.file);
+        fd.append('newPhotos', item.file);
       });
 
       if (editing) {
