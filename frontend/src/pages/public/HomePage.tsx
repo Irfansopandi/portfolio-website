@@ -1103,7 +1103,7 @@ const HomePage = () => {
                     <span>{cert.date}</span>
                   </div>
 
-                  {cert.credentialUrl && (
+                  {cert.credentialUrl && cert.credentialUrl.trim() !== '' && cert.credentialUrl !== 'null' && cert.credentialUrl !== 'undefined' && cert.credentialUrl !== '#' && (
                     <a
                       href={cert.credentialUrl}
                       target="_blank"
@@ -1134,7 +1134,7 @@ const HomePage = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+              className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 pt-24"
               onClick={() => setSelectedCertificate(null)}
             >
               <motion.div
@@ -1151,13 +1151,13 @@ const HomePage = () => {
                   <X size={20} />
                 </button>
                 {selectedCertificate.image && (
-                  <img src={selectedCertificate.image} alt={selectedCertificate.title} className="w-full max-h-[65vh] object-contain bg-black/50" />
+                  <img src={selectedCertificate.image} alt={selectedCertificate.title} className="w-full max-h-[50vh] object-contain bg-black/50" />
                 )}
                 <div className="p-6 bg-black/40">
                   <h3 className="text-2xl font-bold text-white mb-2">{(isEn ? selectedCertificate.titleEn : null) || selectedCertificate.title}</h3>
                   <p className="text-indigo-400 mb-1">{selectedCertificate.issuer}</p>
                   <p className="text-gray-500 mb-4">{selectedCertificate.date}</p>
-                  {selectedCertificate.credentialUrl && (
+                  {selectedCertificate.credentialUrl && selectedCertificate.credentialUrl.trim() !== '' && selectedCertificate.credentialUrl !== 'null' && selectedCertificate.credentialUrl !== 'undefined' && selectedCertificate.credentialUrl !== '#' && (
                     <a href={selectedCertificate.credentialUrl} target="_blank" rel="noopener noreferrer" className="btn-primary inline-flex items-center gap-2">
                       <ExternalLink size={16} />
                       {t('certificates.viewCredential')}
