@@ -33,7 +33,7 @@ const getProjectBySlug = async (req, res) => {
 };
 
 const createProject = async (req, res) => {
-  const { title, titleEn, category, description, descriptionEn, features, featuresEn, challenge, challengeEn, solution, solutionEn, githubUrl, demoUrl, featured, technologies } = req.body;
+  const { title, titleEn, category, description, descriptionEn, features, featuresEn, challenge, challengeEn, solution, solutionEn, githubUrl, demoUrl, date, dateEn, featured, technologies } = req.body;
 
   if (!title || !category || !description) {
     return res.status(400).json({ error: 'Judul, kategori, dan deskripsi wajib diisi.' });
@@ -61,6 +61,8 @@ const createProject = async (req, res) => {
       solutionEn: solutionEn || null,
       githubUrl,
       demoUrl: finalDemoUrl,
+      date: date || null,
+      dateEn: dateEn || null,
       featured: featured === 'true' || featured === true,
       technologies: {
         create: (Array.isArray(technologies) ? technologies : JSON.parse(technologies || '[]'))
@@ -75,7 +77,7 @@ const createProject = async (req, res) => {
 
 const updateProject = async (req, res) => {
   const { id } = req.params;
-  const { title, titleEn, category, description, descriptionEn, features, featuresEn, challenge, challengeEn, solution, solutionEn, githubUrl, demoUrl, featured, technologies } = req.body;
+  const { title, titleEn, category, description, descriptionEn, features, featuresEn, challenge, challengeEn, solution, solutionEn, githubUrl, demoUrl, date, dateEn, featured, technologies } = req.body;
 
   const existing = await prisma.project.findUnique({ where: { id } });
   if (!existing) {
@@ -108,6 +110,8 @@ const updateProject = async (req, res) => {
       solutionEn: solutionEn !== undefined ? solutionEn : existing.solutionEn,
       githubUrl: githubUrl !== undefined ? githubUrl : existing.githubUrl,
       demoUrl: finalDemoUrl,
+      date: date !== undefined ? date : existing.date,
+      dateEn: dateEn !== undefined ? dateEn : existing.dateEn,
       featured: featured !== undefined ? (featured === 'true' || featured === true) : existing.featured,
       technologies: {
         create: (Array.isArray(technologies) ? technologies : JSON.parse(technologies || '[]'))

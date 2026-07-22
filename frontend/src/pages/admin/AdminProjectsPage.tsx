@@ -11,7 +11,7 @@ const CATEGORIES = ['Web Application', 'Mobile Application', 'Machine Learning',
 
 const defaultForm = {
   title: '', titleEn: '', category: 'Web Application', description: '', descriptionEn: '',
-  features: '', featuresEn: '', githubUrl: '', demoUrl: '',
+  features: '', featuresEn: '', githubUrl: '', demoUrl: '', date: '', dateEn: '',
   technologies: '', featured: false,
 };
 
@@ -65,6 +65,8 @@ const AdminProjectsPage = () => {
       featuresEn: project.featuresEn || '',
       githubUrl: project.githubUrl || '',
       demoUrl: project.demoUrl || '',
+      date: project.date || '',
+      dateEn: project.dateEn || '',
       technologies: project.technologies?.map(t => t.technology).join(', ') || '',
       featured: project.featured,
     });
@@ -337,6 +339,19 @@ const AdminProjectsPage = () => {
                       {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
+                </div>
+
+                <div>
+                  <label className="block text-gray-400 text-sm mb-1">
+                    Created At / Date {activeLang === 'id' ? '(🇮🇩)' : '(🇬🇧)'}
+                  </label>
+                  {activeLang === 'id' ? (
+                    <input type="text" className="input-dark" placeholder="Juli 2026"
+                      value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} />
+                  ) : (
+                    <input type="text" className="input-dark" placeholder="July 2026"
+                      value={form.dateEn} onChange={e => setForm({ ...form, dateEn: e.target.value })} />
+                  )}
                 </div>
 
                 <div>

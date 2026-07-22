@@ -179,7 +179,7 @@ const ProjectDetailPage = () => {
                 {t('projects.created')}
               </h3>
               <p className="text-gray-400 text-sm">
-                {new Date(project.createdAt).toLocaleDateString('en-US', {
+                {(isEn ? project.dateEn : null) || project.date || new Date(project.createdAt).toLocaleDateString(isEn ? 'en-US' : 'id-ID', {
                   year: 'numeric', month: 'long', day: 'numeric'
                 })}
               </p>

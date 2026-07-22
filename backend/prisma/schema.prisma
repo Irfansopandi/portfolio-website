@@ -58,6 +58,8 @@ model Project {
 
   githubUrl    String?             @map("github_url")
   demoUrl      String?             @map("demo_url")
+  date         String?
+  dateEn       String?             @map("date_en")
   featured     Boolean             @default(false)
   createdAt    DateTime            @default(now()) @map("created_at")
   updatedAt    DateTime            @updatedAt @map("updated_at")

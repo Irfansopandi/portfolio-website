@@ -39,6 +39,8 @@ export interface Project {
   solutionEn?: string;
   githubUrl?: string;
   demoUrl?: string;
+  date?: string;
+  dateEn?: string;
   featured: boolean;
   createdAt: string;
   technologies: ProjectTechnology[];
