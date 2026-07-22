@@ -72,7 +72,7 @@ const createStorage = (folder) => {
           folder: `portfolio/${folder}`,
           resource_type: isRaw ? 'raw' : 'image',
           public_id: isRaw ? `${nameWithoutExt}-${uniqueSuffix}${ext}` : `${nameWithoutExt}-${uniqueSuffix}`,
-          allowed_formats: isRaw ? undefined : ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'heif'],
+          allowed_formats: isRaw ? undefined : ['jpg', 'jpeg', 'png', 'gif', 'webp'],
           transformation: isRaw ? undefined : [{ quality: 'auto', fetch_format: 'auto' }],
         };
       },
