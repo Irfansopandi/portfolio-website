@@ -1141,7 +1141,7 @@ const HomePage = () => {
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="glass-card max-w-4xl w-full overflow-hidden relative"
+                className="glass-card max-w-2xl w-full overflow-hidden relative"
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
@@ -1525,7 +1525,10 @@ const HomePage = () => {
                     className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? (
-                      <div className="spinner w-5 h-5" />
+                      <>
+                        <div className="spinner w-5 h-5" />
+                        <span>{isEn ? 'Sending...' : 'Mengirim...'}</span>
+                      </>
                     ) : (
                       <>
                         <Send size={18} />
