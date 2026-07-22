@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Save, Upload, User, FileText, Globe } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { User, Mail, Upload, Save, FileText, Check, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { profileService, socialService } from '../../services';
 import type { Profile, SocialMedia } from '../../types';
 import toast from 'react-hot-toast';
 
 const AdminProfilePage = () => {
+  const { i18n } = useTranslation();
+  const isGlobalId = i18n.language === 'id';
+
   const [profile, setProfile] = useState<Profile | null>(null);
   const [socials, setSocials] = useState<SocialMedia[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -114,9 +119,12 @@ const AdminProfilePage = () => {
     <div>
       <div className="mb-8">
         <h1 className="text-3xl font-black text-white mb-2">
-          Profile <span className="gradient-text">Management</span>
+          {isGlobalId ? 'Manajemen ' : 'Profile '}
+          <span className="gradient-text">{isGlobalId ? 'Profil' : 'Management'}</span>
         </h1>
-        <p className="text-gray-400">Update your personal information and public profile.</p>
+        <p className="text-gray-400">
+          {isGlobalId ? 'Perbarui informasi pribadi dan profil publik Anda.' : 'Update your personal information and public profile.'}
+        </p>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MessageSquare, Trash2, Check, Mail, Clock, Copy } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { messageService } from '../../services';
 import type { Message } from '../../types';
 import toast from 'react-hot-toast';
@@ -8,6 +9,9 @@ import toast from 'react-hot-toast';
 type FilterType = 'all' | 'unread' | 'read';
 
 const AdminMessagesPage = () => {
+  const { i18n } = useTranslation();
+  const isGlobalId = i18n.language === 'id';
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<FilterType>('all');
@@ -53,22 +57,30 @@ const AdminMessagesPage = () => {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-black text-white mb-2">Messages <span className="gradient-text">Inbox</span></h1>
+          <h1 className="text-3xl font-black text-white mb-2">
+            {isGlobalId ? 'Kotak Masuk ' : 'Messages '}
+            <span className="gradient-text">{isGlobalId ? 'Pesan' : 'Inbox'}</span>
+          </h1>
           <p className="text-gray-400">
             {messages.length} total
-            {unreadCount > 0 && <span className="text-indigo-400 ml-2">· {unreadCount} unread</span>}
+            {unreadCount > 0 && <span className="text-indigo-400 ml-2">· {unreadCount} {isGlobalId ? 'belum dibaca' : 'unread'}</span>}
           </p>
         </div>
         <div className="flex gap-2">
-          {(['all', 'unread', 'read'] as FilterType[]).map(f => (
-            <button key={f} onClick={() => setFilter(f)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all capitalize ${
-                filter === f ? 'text-white' : 'text-gray-400 hover:text-white'
-              }`}
-              style={{ background: filter === f ? 'linear-gradient(135deg, #6366f1, #a855f7)' : 'rgba(255,255,255,0.05)' }}>
-              {f}
-            </button>
-          ))}
+          {(['all', 'unread', 'read'] as FilterType[]).map(f => {
+            const label = f === 'all' ? (isGlobalId ? 'semua' : 'all') 
+                        : f === 'unread' ? (isGlobalId ? 'belum dibaca' : 'unread') 
+                        : (isGlobalId ? 'sudah dibaca' : 'read');
+            return (
+              <button key={f} onClick={() => setFilter(f)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all capitalize ${
+                  filter === f ? 'text-white' : 'text-gray-400 hover:text-white'
+                }`}
+                style={{ background: filter === f ? 'linear-gradient(135deg, #6366f1, #a855f7)' : 'rgba(255,255,255,0.05)' }}>
+                {label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -80,7 +92,7 @@ const AdminMessagesPage = () => {
           ) : messages.length === 0 ? (
             <div className="glass-card p-10 text-center">
               <MessageSquare size={40} className="text-gray-600 mx-auto mb-3" />
-              <p className="text-gray-400">No messages</p>
+              <p className="text-gray-400">{isGlobalId ? 'Tidak ada pesan' : 'No messages'}</p>
             </div>
           ) : (
             messages.map((msg) => (

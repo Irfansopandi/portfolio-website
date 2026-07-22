@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Lock, Save, Shield, Eye, EyeOff } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { authService } from '../../services';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const AdminSettingsPage = () => {
+  const { i18n } = useTranslation();
+  const isGlobalId = i18n.language === 'id';
+
   const { user } = useAuth();
   const [form, setForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [showPasswords, setShowPasswords] = useState({ current: false, new: false, confirm: false });
@@ -38,15 +42,20 @@ const AdminSettingsPage = () => {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-white mb-2">Settings <span className="gradient-text">& Security</span></h1>
-        <p className="text-gray-400">Manage your account settings and security.</p>
+        <h1 className="text-3xl font-black text-white mb-2">
+          {isGlobalId ? 'Pengaturan ' : 'Settings '}
+          <span className="gradient-text">{isGlobalId ? '& Keamanan' : '& Security'}</span>
+        </h1>
+        <p className="text-gray-400">
+          {isGlobalId ? 'Kelola pengaturan dan keamanan akun Anda.' : 'Manage your account settings and security.'}
+        </p>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Account info */}
         <div className="glass-card p-6">
           <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-            <Shield size={20} className="text-indigo-400" /> Account Information
+            <Shield size={20} className="text-indigo-400" /> {isGlobalId ? 'Informasi Akun' : 'Account Information'}
           </h2>
           <div className="space-y-4">
             <div className="flex items-center gap-4 p-4 rounded-xl"
@@ -74,13 +83,13 @@ const AdminSettingsPage = () => {
         {/* Change password */}
         <div className="glass-card p-6">
           <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-            <Lock size={20} className="text-indigo-400" /> Change Password
+            <Lock size={20} className="text-indigo-400" /> {isGlobalId ? 'Ubah Kata Sandi' : 'Change Password'}
           </h2>
           <form onSubmit={handleChangePassword} className="space-y-4">
             {[
-              { label: 'Current Password', field: 'currentPassword', key: 'current' },
-              { label: 'New Password', field: 'newPassword', key: 'new' },
-              { label: 'Confirm New Password', field: 'confirmPassword', key: 'confirm' },
+              { label: isGlobalId ? 'Kata Sandi Saat Ini' : 'Current Password', field: 'currentPassword', key: 'current' },
+              { label: isGlobalId ? 'Kata Sandi Baru' : 'New Password', field: 'newPassword', key: 'new' },
+              { label: isGlobalId ? 'Konfirmasi Kata Sandi Baru' : 'Confirm New Password', field: 'confirmPassword', key: 'confirm' },
             ].map(({ label, field, key }) => (
               <div key={field}>
                 <label className="block text-gray-400 text-sm mb-2">{label}</label>
@@ -103,10 +112,11 @@ const AdminSettingsPage = () => {
               </div>
             ))}
 
-            <button id="change-pwd-btn" type="submit" disabled={isSaving}
-              className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-50">
-              {isSaving ? <div className="spinner w-4 h-4" /> : <Save size={16} />}
-              Update Password
+            <button type="submit" disabled={isSaving} className="btn-primary w-full flex justify-center items-center gap-2 disabled:opacity-50 mt-6">
+              {isSaving ? <div className="spinner w-5 h-5" /> : <Save size={18} />}
+              {isSaving 
+                ? (isGlobalId ? 'Menyimpan...' : 'Saving...') 
+                : (isGlobalId ? 'Perbarui Kata Sandi' : 'Update Password')}
             </button>
           </form>
         </div>

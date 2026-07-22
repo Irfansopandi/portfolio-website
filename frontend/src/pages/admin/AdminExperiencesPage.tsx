@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Edit, Trash2, X, Briefcase, Users, Image as ImageIcon, Upload, MapPin, Calendar, Globe } from 'lucide-react';
-
+import { useTranslation } from 'react-i18next';
 import { experienceService } from '../../services';
 import type { Experience } from '../../types';
 import toast from 'react-hot-toast';
@@ -90,6 +90,8 @@ const ExistingPhotoPreviewCard = ({ photo, onRemove }: { photo: { id?: string; u
 };
 
 const AdminExperiencesPage = () => {
+  const { i18n } = useTranslation();
+  const isGlobalId = i18n.language === 'id';
   const [activeCategory, setActiveCategory] = useState<'all' | 'work' | 'organization'>('all');
   const [items, setItems] = useState<Experience[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -101,6 +103,7 @@ const AdminExperiencesPage = () => {
   const [existingPhotos, setExistingPhotos] = useState<{ id?: string; url: string; caption?: string }[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -188,10 +191,8 @@ const AdminExperiencesPage = () => {
       fd.append('descriptionEn', form.descriptionEn);
       fd.append('order', form.order);
 
-      // Append existing photos if any remain
-      if (existingPhotos.length > 0) {
-        fd.append('photos', JSON.stringify(existingPhotos));
-      }
+      // Append existing photos (even if empty, so backend knows to clear them if all are deleted)
+      fd.append('photos', JSON.stringify(existingPhotos));
 
       // Append new photo files
       photoFiles.forEach(item => {
@@ -222,6 +223,7 @@ const AdminExperiencesPage = () => {
 
   const handleDeleteConfirm = async () => {
     if (!deleteId) return;
+    setIsDeleting(true);
     try {
       await experienceService.delete(deleteId);
       toast.success('Pengalaman berhasil dihapus!');
@@ -229,14 +231,15 @@ const AdminExperiencesPage = () => {
     } catch {
       toast.error('Gagal menghapus data pengalaman');
     } finally {
+      setIsDeleting(false);
       setDeleteId(null);
     }
   };
 
   const experienceTabs = [
-    { id: 'all', label: 'Semua Pengalaman', count: items.length, icon: null },
-    { id: 'work', label: 'Pengalaman Kerja', count: items.filter(i => i.type === 'work').length, icon: Briefcase },
-    { id: 'organization', label: 'Pengalaman Organisasi', count: items.filter(i => i.type === 'organization').length, icon: Users },
+    { id: 'all', label: isGlobalId ? 'Semua Pengalaman' : 'All Experiences', count: items.length, icon: null },
+    { id: 'work', label: isGlobalId ? 'Pengalaman Kerja' : 'Work Experience', count: items.filter(i => i.type === 'work').length, icon: Briefcase },
+    { id: 'organization', label: isGlobalId ? 'Pengalaman Organisasi' : 'Organization Experience', count: items.filter(i => i.type === 'organization').length, icon: Users },
   ];
 
   const filteredItems = items.filter(item => {
@@ -249,12 +252,13 @@ const AdminExperiencesPage = () => {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-black text-white mb-2">
-            Experience <span className="gradient-text">Management</span>
+            {isGlobalId ? 'Manajemen ' : 'Experience '}
+            <span className="gradient-text">{isGlobalId ? 'Pengalaman' : 'Management'}</span>
           </h1>
-          <p className="text-gray-400">{items.length} total experiences</p>
+          <p className="text-gray-400">{items.length} {isGlobalId ? 'data pengalaman' : 'total experiences'}</p>
         </div>
         <button id="add-experience-btn" onClick={openCreate} className="btn-primary flex items-center gap-2">
-          <Plus size={18} /> Tambah Pengalaman
+          <Plus size={18} /> {isGlobalId ? 'Tambah Pengalaman' : 'Add Experience'}
         </button>
       </div>
 
@@ -316,11 +320,11 @@ const AdminExperiencesPage = () => {
                             : 'bg-purple-500/15 text-purple-400'
                         }`}
                       >
-                        {isWork ? 'Pengalaman Kerja' : 'Organisasi'}
+                        {isWork ? (isGlobalId ? 'Pengalaman Kerja' : 'Work Experience') : (isGlobalId ? 'Organisasi' : 'Organization')}
                       </span>
                       <span className="text-xs text-gray-500 font-mono flex items-center gap-1">
                         <Calendar size={12} />
-                        {item.startDate} — {item.endDate || 'Sekarang'}
+                        {item.startDate} — {item.endDate || (isGlobalId ? 'Sekarang' : 'Present')}
                       </span>
                     </div>
 
@@ -339,7 +343,7 @@ const AdminExperiencesPage = () => {
 
                     {/* Role / Jabatan */}
                     <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-white/5 border border-white/10 text-indigo-300 font-semibold text-xs mb-3">
-                      <span>Jabatan: <span className="text-white">{item.role}</span></span>
+                      <span>{isGlobalId ? 'Jabatan' : 'Role'}: <span className="text-white">{item.role}</span></span>
                     </div>
 
                     {item.description && (
@@ -366,14 +370,14 @@ const AdminExperiencesPage = () => {
                   <button
                     onClick={() => openEdit(item)}
                     className="p-2 rounded-lg text-gray-400 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all"
-                    title="Edit Pengalaman"
+                    title={isGlobalId ? 'Edit Pengalaman' : 'Edit Experience'}
                   >
                     <Edit size={16} />
                   </button>
                   <button
                     onClick={() => handleDeleteClick(item.id)}
                     className="p-2 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
-                    title="Hapus Pengalaman"
+                    title={isGlobalId ? 'Hapus Pengalaman' : 'Delete Experience'}
                   >
                     <Trash2 size={16} />
                   </button>
@@ -382,13 +386,13 @@ const AdminExperiencesPage = () => {
             );
           })}
 
-          {items.length === 0 && (
+          {filteredItems.length === 0 && (
             <div className="text-center py-16 glass-card">
               <Briefcase size={48} className="text-gray-600 mx-auto mb-3" />
               <p className="text-gray-400">
-                Belum ada pengalaman.{' '}
+                {isGlobalId ? 'Belum ada pengalaman. ' : 'No experiences found. '}
                 <button onClick={openCreate} className="text-indigo-400 underline font-medium">
-                  Tambah sekarang!
+                  {isGlobalId ? 'Tambah sekarang!' : 'Add now!'}
                 </button>
               </p>
             </div>
@@ -412,8 +416,8 @@ const AdminExperiencesPage = () => {
               className="glass-card-dark w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden my-auto"
             >
               <div className="flex items-center justify-between p-6 border-b border-white/10 flex-shrink-0">
-                <h2 className="text-xl font-bold text-white">
-                  {editing ? 'Edit Pengalaman' : 'Tambah Pengalaman'}
+                <h2 className="text-xl font-bold text-white mb-6">
+                  {editing ? (activeLang === 'id' ? 'Edit Pengalaman' : 'Edit Experience') : (activeLang === 'id' ? 'Tambah Pengalaman' : 'Add Experience')}
                 </h2>
                 <div className="flex gap-2 bg-white/5 p-1 rounded-xl border border-white/10 mr-4">
                   <button
@@ -442,30 +446,26 @@ const AdminExperiencesPage = () => {
 
               <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1 custom-scrollbar">
                 {/* Type selection */}
-                <div>
-                  <label className="block text-gray-400 text-sm mb-2 font-medium">Kategori Pengalaman *</label>
+                <div className="mb-6">
+                  <label className="block text-gray-400 text-sm mb-3 font-medium">
+                    {activeLang === 'id' ? 'Kategori Pengalaman *' : 'Experience Category *'}
+                  </label>
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
                       onClick={() => setForm({ ...form, type: 'work' })}
-                      className={`p-3 rounded-xl flex items-center justify-center gap-2 border text-sm font-semibold transition-all ${
-                        form.type === 'work'
-                          ? 'bg-indigo-500/20 border-indigo-500 text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.3)]'
-                          : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
-                      }`}
+                      className={`py-3 px-4 rounded-xl border flex items-center justify-center gap-2 transition-all ${form.type === 'work' ? 'bg-indigo-600/20 border-indigo-500 text-white' : 'border-white/10 text-gray-400 hover:border-white/20'}`}
                     >
-                      <Briefcase size={16} /> Pengalaman Kerja
+                      <Briefcase size={16} />
+                      {activeLang === 'id' ? 'Pengalaman Kerja' : 'Work Experience'}
                     </button>
                     <button
                       type="button"
                       onClick={() => setForm({ ...form, type: 'organization' })}
-                      className={`p-3 rounded-xl flex items-center justify-center gap-2 border text-sm font-semibold transition-all ${
-                        form.type === 'organization'
-                          ? 'bg-purple-500/20 border-purple-500 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.3)]'
-                          : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
-                      }`}
+                      className={`py-3 px-4 rounded-xl border flex items-center justify-center gap-2 transition-all ${form.type === 'organization' ? 'bg-indigo-600/20 border-indigo-500 text-white' : 'border-white/10 text-gray-400 hover:border-white/20'}`}
                     >
-                      <Users size={16} /> Pengalaman Organisasi
+                      <Users size={16} />
+                      {activeLang === 'id' ? 'Pengalaman Organisasi' : 'Organization Experience'}
                     </button>
                   </div>
                 </div>
@@ -473,12 +473,14 @@ const AdminExperiencesPage = () => {
                 {/* Organization / Company name */}
                 <div>
                   <label className="block text-gray-400 text-sm mb-1 font-medium">
-                    {form.type === 'work' ? 'Nama Perusahaan / Perusahaan Tempat Kerja *' : 'Nama Organisasi *'}
+                    {form.type === 'work' 
+                      ? (activeLang === 'id' ? 'Nama Perusahaan *' : 'Company Name *') 
+                      : (activeLang === 'id' ? 'Nama Organisasi *' : 'Organization Name *')}
                   </label>
                   <input
                     type="text"
                     className="input-dark"
-                    placeholder={form.type === 'work' ? 'e.g. PT Digital Solusi Indonesia' : 'e.g. Himpunan Mahasiswa Teknik Informatika'}
+                    placeholder={form.type === 'work' ? 'e.g. PT Maju Bersama' : 'e.g. Himpunan Mahasiswa Teknik Informatika (HMTI)'}
                     value={form.organization}
                     onChange={e => setForm({ ...form, organization: e.target.value })}
                     required
@@ -488,12 +490,12 @@ const AdminExperiencesPage = () => {
                 {/* Institution / Univ */}
                 <div>
                   <label className="block text-gray-400 text-sm mb-1 font-medium">
-                    {form.type === 'work' ? 'Instansi / Cabang / Lokasi' : 'Nama Univ / Sekolah / Kampus'}
+                    {activeLang === 'id' ? 'Nama Univ / Sekolah / Kampus' : 'University / School / Campus Name'}
                   </label>
                   <input
                     type="text"
                     className="input-dark"
-                    placeholder={form.type === 'work' ? 'e.g. Headquarter Jakarta Pusat' : 'e.g. Bina Sarana Informatika University'}
+                    placeholder={activeLang === 'id' ? 'e.g. Universitas Bina Sarana Informatika' : 'e.g. Bina Sarana Informatika University'}
                     value={form.institution}
                     onChange={e => setForm({ ...form, institution: e.target.value })}
                   />
@@ -528,22 +530,26 @@ const AdminExperiencesPage = () => {
                 {/* Period: Start date & End date */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-gray-400 text-sm mb-1 font-medium">Tanggal Mulai (Bulan & Tahun) *</label>
+                    <label className="block text-gray-400 text-sm mb-1 font-medium">
+                      {activeLang === 'id' ? 'Tanggal Mulai (Bulan & Tahun) *' : 'Start Date (Month & Year) *'}
+                    </label>
                     <input
                       type="text"
                       className="input-dark"
-                      placeholder="e.g. Januari 2022"
+                      placeholder={activeLang === 'id' ? 'e.g. Januari 2022' : 'e.g. January 2022'}
                       value={form.startDate}
                       onChange={e => setForm({ ...form, startDate: e.target.value })}
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-400 text-sm mb-1 font-medium">Tanggal Selesai</label>
+                    <label className="block text-gray-400 text-sm mb-1 font-medium">
+                      {activeLang === 'id' ? 'Tanggal Selesai' : 'End Date'}
+                    </label>
                     <input
                       type="text"
                       className="input-dark"
-                      placeholder="e.g. Desember 2023 / Sekarang"
+                      placeholder={activeLang === 'id' ? 'e.g. Desember 2023 / Sekarang' : 'e.g. December 2023 / Present'}
                       value={form.endDate}
                       onChange={e => setForm({ ...form, endDate: e.target.value })}
                     />
@@ -578,13 +584,13 @@ const AdminExperiencesPage = () => {
                 {/* History Photos Upload Section */}
                 <div>
                   <label className="block text-gray-400 text-sm mb-2 font-medium flex items-center gap-2">
-                    <ImageIcon size={16} className="text-indigo-400" /> Foto History / Dokumentasi
+                    <ImageIcon size={16} className="text-indigo-400" /> {activeLang === 'id' ? 'Foto History / Dokumentasi' : 'History Photos / Documentation'}
                   </label>
 
                   {/* Existing photos preview */}
                   {existingPhotos.length > 0 && (
                     <div className="mb-3">
-                      <p className="text-xs text-gray-500 mb-2">Foto Terimpan:</p>
+                      <p className="text-xs text-gray-500 mb-2">{activeLang === 'id' ? 'Foto Tersimpan:' : 'Saved Photos:'}</p>
                       <div className="flex flex-wrap gap-2">
                         {existingPhotos.map((photo, idx) => (
                           <ExistingPhotoPreviewCard
@@ -600,7 +606,7 @@ const AdminExperiencesPage = () => {
                   {/* New photo files preview */}
                   {photoFiles.length > 0 && (
                     <div className="mb-3">
-                      <p className="text-xs text-gray-500 mb-2">Foto Baru Ditambahkan:</p>
+                      <p className="text-xs text-gray-500 mb-2">{activeLang === 'id' ? 'Foto Baru yang akan diupload:' : 'New Photos to upload:'}</p>
                       <div className="flex flex-wrap gap-2">
                         {photoFiles.map((item, idx) => (
                           <NewPhotoPreviewCard
@@ -613,13 +619,19 @@ const AdminExperiencesPage = () => {
                     </div>
                   )}
 
-
-
                   {/* Upload button */}
-                  <label className="border-2 border-dashed border-white/15 hover:border-indigo-500/50 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all bg-white/[0.02]">
-                    <Upload size={24} className="text-indigo-400 mb-1" />
-                    <span className="text-xs text-gray-300 font-medium">Klik untuk upload foto history</span>
-                    <span className="text-[10px] text-gray-500 mt-0.5">JPEG, PNG, WebP, HEIC (Bisa pilih beberapa foto sekaligus)</span>
+                  <label className="block cursor-pointer">
+                    <div className="py-6 rounded-xl border-2 border-dashed flex flex-col items-center justify-center hover:bg-white/5 transition-colors group border-white/10 hover:border-indigo-500/50">
+                      <div className="p-3 bg-indigo-500/10 rounded-full mb-3 group-hover:scale-110 transition-transform">
+                        <Upload size={24} className="text-indigo-400" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-300 mb-1">
+                        {activeLang === 'id' ? 'Klik untuk upload foto history' : 'Click to upload history photos'}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {activeLang === 'id' ? 'JPEG, PNG, WebP, HEIC (Bisa pilih beberapa foto sekaligus)' : 'JPEG, PNG, WebP, HEIC (You can select multiple photos)'}
+                      </span>
+                    </div>
                     <input
                       type="file"
                       accept="image/png, image/jpeg, image/jpg, image/webp, image/heic, image/heif, .heic, .heif"
@@ -627,25 +639,18 @@ const AdminExperiencesPage = () => {
                       className="hidden"
                       onChange={handlePhotoSelect}
                     />
-
                   </label>
                 </div>
 
-                <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
-                  <button
-                    type="button"
-                    onClick={() => setIsModalOpen(false)}
-                    className="btn-secondary px-4 py-2"
-                  >
-                    Batal
+                <div className="flex justify-end gap-3 pt-6 border-t border-white/10">
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="btn-secondary px-6 py-2.5">
+                    {activeLang === 'id' ? 'Batal' : 'Cancel'}
                   </button>
-                  <button
-                    type="submit"
-                    disabled={isSaving}
-                    className="btn-primary flex items-center gap-2 disabled:opacity-50"
-                  >
+                  <button type="submit" disabled={isSaving} className="btn-primary flex items-center gap-2 px-6 py-2.5 disabled:opacity-50">
                     {isSaving && <div className="spinner w-4 h-4" />}
-                    {editing ? 'Simpan Perubahan' : 'Tambah Pengalaman'}
+                    {isSaving 
+                      ? (activeLang === 'id' ? 'Memproses...' : 'Processing...') 
+                      : (activeLang === 'id' ? (editing ? 'Simpan Perubahan' : 'Tambah Pengalaman') : (editing ? 'Update Experience' : 'Add Experience'))}
                   </button>
                 </div>
               </form>
@@ -657,11 +662,12 @@ const AdminExperiencesPage = () => {
       <ConfirmDialog
         isOpen={deleteId !== null}
         title="Hapus Pengalaman"
-        message="Apakah Anda yakin ingin menghapus data pengalaman ini beserta seluruh fotonya?"
+        message="Apakah Anda yakin ingin menghapus data pengalaman ini? Tindakan ini tidak dapat dibatalkan."
         confirmLabel="Hapus"
         cancelLabel="Batal"
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteId(null)}
+        isLoading={isDeleting}
         isDanger={true}
       />
     </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Edit, Trash2, X, Upload, Award, ExternalLink } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { certificateService } from '../../services';
 import type { Certificate } from '../../types';
 import toast from 'react-hot-toast';
@@ -9,6 +10,9 @@ import { ConfirmDialog } from '../../components/ConfirmDialog';
 const defaultForm = { title: '', titleEn: '', issuer: '', date: '', credentialUrl: '' };
 
 const AdminCertificatesPage = () => {
+  const { i18n } = useTranslation();
+  const isGlobalId = i18n.language === 'id';
+
   const [items, setItems] = useState<Certificate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,6 +23,7 @@ const AdminCertificatesPage = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchData = async () => {
     try { const res = await certificateService.getAll(); setItems(res.data); }
@@ -76,6 +81,7 @@ const AdminCertificatesPage = () => {
 
   const handleDeleteConfirm = async () => {
     if (!deleteId) return;
+    setIsDeleting(true);
     try {
       await certificateService.delete(deleteId);
       toast.success('Sertifikat berhasil dihapus!');
@@ -83,6 +89,7 @@ const AdminCertificatesPage = () => {
     } catch {
       toast.error('Gagal menghapus sertifikat');
     } finally {
+      setIsDeleting(false);
       setDeleteId(null);
     }
   };
@@ -91,11 +98,16 @@ const AdminCertificatesPage = () => {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-black text-white mb-2">Certificates <span className="gradient-text">Management</span></h1>
-          <p className="text-gray-400">{items.length} certificates</p>
+          <h1 className="text-3xl font-black text-white mb-2">
+            {isGlobalId ? 'Manajemen ' : 'Certificate '}
+            <span className="gradient-text">{isGlobalId ? 'Sertifikat' : 'Management'}</span>
+          </h1>
+          <p className="text-gray-400">
+            {items.length} {isGlobalId ? 'data sertifikat' : 'certificates'}
+          </p>
         </div>
-        <button id="add-cert-btn" onClick={openCreate} className="btn-primary flex items-center gap-2">
-          <Plus size={18} /> Add Certificate
+        <button onClick={openCreate} className="btn-primary flex items-center gap-2">
+          <Plus size={18} /> {isGlobalId ? 'Tambah Sertifikat' : 'Add Certificate'}
         </button>
       </div>
 
@@ -138,9 +150,14 @@ const AdminCertificatesPage = () => {
             </motion.div>
           ))}
           {items.length === 0 && (
-            <div className="col-span-3 text-center py-16 glass-card">
+            <div className="col-span-full text-center py-16 glass-card">
               <Award size={48} className="text-gray-600 mx-auto mb-3" />
-              <p className="text-gray-400">No certificates yet. <button onClick={openCreate} className="text-indigo-400">Add one!</button></p>
+              <p className="text-gray-400">
+                {isGlobalId ? 'Belum ada data sertifikat. ' : 'No certificates found. '}
+                <button onClick={openCreate} className="text-indigo-400">
+                  {isGlobalId ? 'Tambahkan sekarang!' : 'Add one!'}
+                </button>
+              </p>
             </div>
           )}
         </div>
@@ -153,7 +170,9 @@ const AdminCertificatesPage = () => {
             <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }}
               className="glass-card-dark w-full max-w-md">
               <div className="flex items-center justify-between p-6 border-b border-white/10">
-                <h2 className="text-xl font-bold text-white">{editing ? 'Edit' : 'Add'} Certificate</h2>
+                <h2 className="text-xl font-bold text-white">
+                  {editing ? (activeLang === 'id' ? 'Edit Sertifikat' : 'Edit Certificate') : (activeLang === 'id' ? 'Tambah Sertifikat' : 'Add Certificate')}
+                </h2>
                 <div className="flex gap-2 bg-white/5 p-1 rounded-xl border border-white/10 mr-4">
                   <button
                     type="button"
@@ -183,7 +202,7 @@ const AdminCertificatesPage = () => {
                     {imagePreview ? <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" /> : (
                       <div className="flex flex-col items-center gap-2 text-gray-500">
                         <Upload size={24} className="text-indigo-400" />
-                        <span className="text-xs">Upload certificate image</span>
+                        <span className="text-xs">{activeLang === 'id' ? 'Unggah gambar sertifikat' : 'Upload certificate image'}</span>
                       </div>
                     )}
                   </div>
@@ -209,7 +228,9 @@ const AdminCertificatesPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-gray-400 text-sm mb-1">Issuer *</label>
+                  <label className="block text-gray-400 text-sm mb-1">
+                    {activeLang === 'id' ? 'Penerbit *' : 'Issuer *'}
+                  </label>
                   <input type="text" className="input-dark" placeholder="Udemy, Google, AWS..."
                     value={form.issuer}
                     onChange={e => setForm({ ...form, issuer: e.target.value })}
@@ -217,7 +238,9 @@ const AdminCertificatesPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-gray-400 text-sm mb-1">Date *</label>
+                  <label className="block text-gray-400 text-sm mb-1">
+                    {activeLang === 'id' ? 'Tanggal *' : 'Date *'}
+                  </label>
                   <input type="text" className="input-dark" placeholder="2023-06"
                     value={form.date}
                     onChange={e => setForm({ ...form, date: e.target.value })}
@@ -225,17 +248,25 @@ const AdminCertificatesPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-gray-400 text-sm mb-1">Credential URL</label>
+                  <label className="block text-gray-400 text-sm mb-1">
+                    {activeLang === 'id' ? 'URL Kredensial' : 'Credential URL'}
+                  </label>
                   <input type="text" className="input-dark" placeholder="https://..."
                     value={form.credentialUrl}
                     onChange={e => setForm({ ...form, credentialUrl: e.target.value })} />
                 </div>
 
-                <div className="flex justify-end gap-3">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="btn-secondary px-4 py-2">Cancel</button>
+                <div className="flex justify-end gap-3 mt-6">
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="btn-secondary px-4 py-2">
+                    {activeLang === 'id' ? 'Batal' : 'Cancel'}
+                  </button>
                   <button type="submit" disabled={isSaving} className="btn-primary flex items-center gap-2 disabled:opacity-50">
                     {isSaving && <div className="spinner w-4 h-4" />}
-                    {editing ? 'Update' : 'Add'} Certificate
+                    {isSaving 
+                      ? (activeLang === 'id' ? 'Memproses...' : 'Processing...') 
+                      : editing 
+                        ? (activeLang === 'id' ? 'Simpan Perubahan' : 'Update Certificate') 
+                        : (activeLang === 'id' ? 'Tambah Sertifikat' : 'Add Certificate')}
                   </button>
                 </div>
               </form>
@@ -252,6 +283,7 @@ const AdminCertificatesPage = () => {
         cancelLabel="Batal"
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteId(null)}
+        isLoading={isDeleting}
         isDanger={true}
       />
     </div>

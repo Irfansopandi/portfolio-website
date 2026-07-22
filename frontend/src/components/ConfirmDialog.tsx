@@ -10,6 +10,7 @@ interface ConfirmDialogProps {
   onConfirm: () => void;
   onCancel: () => void;
   isDanger?: boolean;
+  isLoading?: boolean;
 }
 
 export const ConfirmDialog = ({
@@ -21,6 +22,7 @@ export const ConfirmDialog = ({
   onConfirm,
   onCancel,
   isDanger = true,
+  isLoading = false,
 }: ConfirmDialogProps) => {
   return (
     <AnimatePresence>
@@ -50,7 +52,8 @@ export const ConfirmDialog = ({
               </div>
               <button
                 onClick={onCancel}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                disabled={isLoading}
+                className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors disabled:opacity-50"
               >
                 <X size={16} />
               </button>
@@ -62,20 +65,23 @@ export const ConfirmDialog = ({
               <button
                 type="button"
                 onClick={onCancel}
-                className="btn-secondary px-4 py-2 text-xs"
+                disabled={isLoading}
+                className="btn-secondary px-4 py-2 text-xs disabled:opacity-50"
               >
                 {cancelLabel}
               </button>
               <button
                 type="button"
                 onClick={onConfirm}
-                className={`px-4 py-2 rounded-xl font-bold text-xs text-white transition-all ${
+                disabled={isLoading}
+                className={`px-4 py-2 flex items-center gap-2 rounded-xl font-bold text-xs text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                   isDanger
                     ? 'bg-red-600 hover:bg-red-700 shadow-lg shadow-red-600/20'
                     : 'bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/20'
                 }`}
               >
-                {confirmLabel}
+                {isLoading && <div className="spinner w-3 h-3 border-white border-t-transparent" />}
+                {isLoading ? 'Memproses...' : confirmLabel}
               </button>
             </div>
           </motion.div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Edit, Trash2, X, GraduationCap, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { educationService } from '../../services';
 import type { Education } from '../../types';
 import toast from 'react-hot-toast';
@@ -18,6 +19,9 @@ const defaultForm = {
 };
 
 const AdminEducationPage = () => {
+  const { i18n } = useTranslation();
+  const isGlobalId = i18n.language === 'id';
+
   const [items, setItems] = useState<Education[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,6 +30,7 @@ const AdminEducationPage = () => {
   const [form, setForm] = useState(defaultForm);
   const [isSaving, setIsSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -88,6 +93,7 @@ const AdminEducationPage = () => {
 
   const handleDeleteConfirm = async () => {
     if (!deleteId) return;
+    setIsDeleting(true);
     try {
       await educationService.delete(deleteId);
       toast.success('Pendidikan berhasil dihapus!');
@@ -95,6 +101,7 @@ const AdminEducationPage = () => {
     } catch {
       toast.error('Gagal menghapus data pendidikan');
     } finally {
+      setIsDeleting(false);
       setDeleteId(null);
     }
   };
@@ -104,12 +111,15 @@ const AdminEducationPage = () => {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-black text-white mb-2">
-            Education <span className="gradient-text">Management</span>
+            {isGlobalId ? 'Manajemen ' : 'Education '}
+            <span className="gradient-text">{isGlobalId ? 'Pendidikan' : 'Management'}</span>
           </h1>
-          <p className="text-gray-400">{items.length} education records</p>
+          <p className="text-gray-400">
+            {items.length} {isGlobalId ? 'data pendidikan' : 'education records'}
+          </p>
         </div>
         <button id="add-education-btn" onClick={openCreate} className="btn-primary flex items-center gap-2">
-          <Plus size={18} /> Add Education
+          <Plus size={18} /> {isGlobalId ? 'Tambah Pendidikan' : 'Add Education'}
         </button>
       </div>
 
@@ -126,9 +136,9 @@ const AdminEducationPage = () => {
               </div>
               <div className="flex-1">
                 <h3 className="text-white font-bold text-lg">{item.institution}</h3>
-                <p className="text-indigo-400 text-sm mb-1">{item.degree}</p>
-                <p className="text-gray-500 text-sm">{item.startDate} — {item.endDate || 'Present'}</p>
-                {item.description && <p className="text-gray-400 text-sm mt-2">{item.description}</p>}
+                <p className="text-indigo-400 text-sm mb-1">{isGlobalId && item.degreeEn ? item.degree : (item.degreeEn || item.degree)}</p>
+                <p className="text-gray-500 text-sm">{item.startDate} — {item.endDate || (isGlobalId ? 'Sekarang' : 'Present')}</p>
+                {item.description && <p className="text-gray-400 text-sm mt-2">{isGlobalId && item.descriptionEn ? item.description : (item.descriptionEn || item.description)}</p>}
               </div>
               <div className="flex gap-2">
                 <button onClick={() => openEdit(item)}
@@ -145,7 +155,12 @@ const AdminEducationPage = () => {
           {items.length === 0 && (
             <div className="text-center py-16 glass-card">
               <GraduationCap size={48} className="text-gray-600 mx-auto mb-3" />
-              <p className="text-gray-400">No education records. <button onClick={openCreate} className="text-indigo-400">Add one!</button></p>
+              <p className="text-gray-400">
+                {isGlobalId ? 'Belum ada data pendidikan. ' : 'No education records. '}
+                <button onClick={openCreate} className="text-indigo-400">
+                  {isGlobalId ? 'Tambahkan sekarang!' : 'Add one!'}
+                </button>
+              </p>
             </div>
           )}
         </div>
@@ -158,7 +173,9 @@ const AdminEducationPage = () => {
             <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }}
               className="glass-card-dark w-full max-w-lg">
               <div className="flex items-center justify-between p-6 border-b border-white/10">
-                <h2 className="text-xl font-bold text-white">{editing ? 'Edit' : 'Add'} Education</h2>
+                <h2 className="text-xl font-bold text-white">
+                  {editing ? (activeLang === 'id' ? 'Edit Pendidikan' : 'Edit Education') : (activeLang === 'id' ? 'Tambah Pendidikan' : 'Add Education')}
+                </h2>
                 <div className="flex gap-2 bg-white/5 p-1 rounded-xl border border-white/10 mr-4">
                   <button
                     type="button"
@@ -183,8 +200,10 @@ const AdminEducationPage = () => {
               </div>
               <form onSubmit={handleSubmit} className="p-6 space-y-4">
                 <div>
-                  <label className="block text-gray-400 text-sm mb-1">Institution *</label>
-                  <input type="text" className="input-dark" placeholder="Bina Sarana Informatika University"
+                  <label className="block text-gray-400 text-sm mb-1">
+                    {activeLang === 'id' ? 'Institusi *' : 'Institution *'}
+                  </label>
+                  <input type="text" className="input-dark" placeholder={activeLang === 'id' ? "Contoh: Universitas Indonesia" : "e.g. Harvard University"}
                     value={form.institution}
                     onChange={e => setForm({ ...form, institution: e.target.value })}
                     required />
@@ -209,23 +228,29 @@ const AdminEducationPage = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-gray-400 text-sm mb-1">Start Year *</label>
+                    <label className="block text-gray-400 text-sm mb-1">
+                      {activeLang === 'id' ? 'Tahun Mulai *' : 'Start Year *'}
+                    </label>
                     <input type="text" className="input-dark" placeholder="2020"
                       value={form.startDate}
                       onChange={e => setForm({ ...form, startDate: e.target.value })}
                       required />
                   </div>
                   <div>
-                    <label className="block text-gray-400 text-sm mb-1">End Year</label>
-                    <input type="text" className="input-dark" placeholder="2023"
+                    <label className="block text-gray-400 text-sm mb-1">
+                      {activeLang === 'id' ? 'Tahun Selesai' : 'End Year'}
+                    </label>
+                    <input type="text" className="input-dark" placeholder={activeLang === 'id' ? "2024 / Sekarang" : "2024 / Present"}
                       value={form.endDate}
                       onChange={e => setForm({ ...form, endDate: e.target.value })} />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-gray-400 text-sm mb-1">Order</label>
-                  <input type="text" className="input-dark" placeholder="1"
+                  <label className="block text-gray-400 text-sm mb-1">
+                    {activeLang === 'id' ? 'Urutan' : 'Order'}
+                  </label>
+                  <input type="number" className="input-dark" placeholder="1"
                     value={form.order}
                     onChange={e => setForm({ ...form, order: e.target.value })} />
                 </div>
@@ -245,11 +270,17 @@ const AdminEducationPage = () => {
                       onChange={e => setForm({ ...form, descriptionEn: e.target.value })} />
                   )}
                 </div>
-                <div className="flex justify-end gap-3">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="btn-secondary px-4 py-2">Cancel</button>
+                <div className="flex justify-end gap-3 mt-6">
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="btn-secondary px-4 py-2">
+                    {activeLang === 'id' ? 'Batal' : 'Cancel'}
+                  </button>
                   <button type="submit" disabled={isSaving} className="btn-primary flex items-center gap-2 disabled:opacity-50">
                     {isSaving && <div className="spinner w-4 h-4" />}
-                    {editing ? 'Update' : 'Add'} Education
+                    {isSaving 
+                      ? (activeLang === 'id' ? 'Memproses...' : 'Processing...') 
+                      : editing 
+                        ? (activeLang === 'id' ? 'Simpan Perubahan' : 'Update Education') 
+                        : (activeLang === 'id' ? 'Tambah Pendidikan' : 'Add Education')}
                   </button>
                 </div>
               </form>
@@ -260,12 +291,13 @@ const AdminEducationPage = () => {
 
       <ConfirmDialog
         isOpen={deleteId !== null}
-        title="Hapus Pendidikan"
-        message="Apakah Anda yakin ingin menghapus data pendidikan ini? Tindakan ini tidak dapat dibatalkan."
-        confirmLabel="Hapus"
-        cancelLabel="Batal"
+        title={activeLang === 'id' ? 'Hapus Pendidikan' : 'Delete Education'}
+        message={activeLang === 'id' ? 'Apakah Anda yakin ingin menghapus pendidikan ini? Tindakan ini tidak dapat dibatalkan.' : 'Are you sure you want to delete this education record? This action cannot be undone.'}
+        confirmLabel={activeLang === 'id' ? 'Hapus' : 'Delete'}
+        cancelLabel={activeLang === 'id' ? 'Batal' : 'Cancel'}
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteId(null)}
+        isLoading={isDeleting}
         isDanger={true}
       />
     </div>

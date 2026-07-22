@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Edit, Trash2, X, ChevronDown, Search } from 'lucide-react';
+import { Plus, Edit, Trash2, X, ChevronDown, Search, Wrench } from 'lucide-react';
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { skillService } from '../../services';
 import type { Skill } from '../../types';
 import toast from 'react-hot-toast';
@@ -191,9 +192,9 @@ const SearchableDropdown = ({ options, value, onChange }: SearchableDropdownProp
 
 
 const AdminSkillsPage = () => {
+  const { i18n } = useTranslation();
+  const isGlobalId = i18n.language === 'id';
   const [activeCategory, setActiveCategory] = useState<string>('All');
-
-
   const [skills, setSkills] = useState<Skill[]>([]);
   const [grouped, setGrouped] = useState<Record<string, Skill[]>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -262,11 +263,16 @@ const AdminSkillsPage = () => {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-black text-white mb-2">Skills <span className="gradient-text">Management</span></h1>
-          <p className="text-gray-400">{skills.length} skills total</p>
+          <h1 className="text-3xl font-black text-white mb-2">
+            {isGlobalId ? 'Manajemen ' : 'Skills '}
+            <span className="gradient-text">{isGlobalId ? 'Keahlian' : 'Management'}</span>
+          </h1>
+          <p className="text-gray-400">
+            {skills.length} {isGlobalId ? 'total keahlian' : 'skills total'}
+          </p>
         </div>
         <button id="add-skill-btn" onClick={openCreate} className="btn-primary flex items-center gap-2">
-          <Plus size={18} /> Add Skill
+          <Plus size={18} /> {isGlobalId ? 'Tambah Keahlian' : 'Add Skill'}
         </button>
       </div>
 
@@ -285,7 +291,7 @@ const AdminSkillsPage = () => {
                   : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
               }`}
             >
-              <span>{category === 'All' ? 'Semua Skill' : category}</span>
+              <span>{category === 'All' ? (isGlobalId ? 'Semua Keahlian' : 'All Skills') : category}</span>
               <span
                 className={`text-xs px-2 py-0.5 rounded-full font-mono ${
                   isActive ? 'bg-white/20 text-white' : 'bg-white/10 text-gray-400'

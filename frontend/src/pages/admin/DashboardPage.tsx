@@ -2,10 +2,14 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FolderOpen, Award, MessageSquare, Eye, Mail, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { visitorService, messageService } from '../../services';
 import type { DashboardStats, Message } from '../../types';
 
 const DashboardPage = () => {
+  const { i18n } = useTranslation();
+  const isGlobalId = i18n.language === 'id';
+
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentMessages, setRecentMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,36 +27,36 @@ const DashboardPage = () => {
 
   const statCards = [
     {
-      label: 'Total Projects',
+      label: isGlobalId ? 'Total Proyek' : 'Total Projects',
       value: stats?.totalProjects ?? 0,
       icon: FolderOpen,
       color: '#6366f1',
       href: '/admin/projects',
-      change: '+2 this month',
+      change: isGlobalId ? 'Data proyek' : 'Project data',
     },
     {
-      label: 'Certificates',
+      label: isGlobalId ? 'Sertifikat' : 'Certificates',
       value: stats?.totalCertificates ?? 0,
       icon: Award,
       color: '#a855f7',
       href: '/admin/certificate',
-      change: '+1 this month',
+      change: isGlobalId ? 'Sertifikat keahlian' : 'Skill certificates',
     },
     {
-      label: 'Messages',
+      label: isGlobalId ? 'Pesan' : 'Messages',
       value: stats?.totalMessages ?? 0,
       icon: MessageSquare,
       color: '#06b6d4',
       href: '/admin/messages',
-      change: `${stats?.unreadMessages ?? 0} unread`,
+      change: `${stats?.unreadMessages ?? 0} ${isGlobalId ? 'belum dibaca' : 'unread'}`,
     },
     {
-      label: 'Total Visitors',
+      label: isGlobalId ? 'Total Pengunjung' : 'Total Visitors',
       value: stats?.totalVisitors ?? 0,
       icon: Eye,
       color: '#10b981',
       href: '#',
-      change: 'All time',
+      change: isGlobalId ? 'Sepanjang waktu' : 'All time',
     },
   ];
 
@@ -61,9 +65,11 @@ const DashboardPage = () => {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-black text-white mb-2">
-          Dashboard <span className="gradient-text">Overview</span>
+          Dashboard <span className="gradient-text">{isGlobalId ? 'Ringkasan' : 'Overview'}</span>
         </h1>
-        <p className="text-gray-400">Welcome back! Here's what's happening with your portfolio.</p>
+        <p className="text-gray-400">
+          {isGlobalId ? 'Selamat datang kembali! Berikut ringkasan portofolio Anda.' : "Welcome back! Here's what's happening with your portfolio."}
+        </p>
       </div>
 
       {/* Stat cards */}

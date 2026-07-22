@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Edit, Trash2, ExternalLink, Github, X, Upload, Search, Folder, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { projectService } from '../../services';
 import type { Project } from '../../types';
 import toast from 'react-hot-toast';
@@ -15,6 +16,9 @@ const defaultForm = {
 };
 
 const AdminProjectsPage = () => {
+  const { i18n } = useTranslation();
+  const isGlobalId = i18n.language === 'id';
+
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -134,22 +138,25 @@ const AdminProjectsPage = () => {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-black text-white mb-2">
-            Projects <span className="gradient-text">Management</span>
+            {isGlobalId ? 'Manajemen ' : 'Projects '}
+            <span className="gradient-text">{isGlobalId ? 'Proyek' : 'Management'}</span>
           </h1>
-          <p className="text-gray-400">{projects.length} projects total</p>
+          <p className="text-gray-400">
+            {projects.length} {isGlobalId ? 'total proyek' : 'projects total'}
+          </p>
         </div>
         <button id="add-project-btn" onClick={openCreate} className="btn-primary flex items-center gap-2">
-          <Plus size={18} /> Add Project
+          <Plus size={18} /> {isGlobalId ? 'Tambah Proyek' : 'Add Project'}
         </button>
       </div>
 
       {/* Search */}
       <div className="relative mb-6">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         <input
           type="text"
           className="input-dark pl-10"
-          placeholder="Search projects..."
+          placeholder={isGlobalId ? 'Cari proyek...' : 'Search projects...'}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -236,8 +243,13 @@ const AdminProjectsPage = () => {
 
           {filtered.length === 0 && (
             <div className="text-center py-16">
-              <div className="text-5xl mb-3">📁</div>
-              <p className="text-gray-400">No projects found. <button onClick={openCreate} className="text-indigo-400 hover:underline">Add one!</button></p>
+              <Folder size={48} className="text-gray-600 mx-auto mb-3" />
+              <p className="text-gray-400">
+                {isGlobalId ? 'Belum ada data proyek. ' : 'No projects found. '}
+                <button onClick={openCreate} className="text-indigo-400 hover:underline">
+                  {isGlobalId ? 'Tambahkan sekarang!' : 'Add one!'}
+                </button>
+              </p>
             </div>
           )}
         </div>
