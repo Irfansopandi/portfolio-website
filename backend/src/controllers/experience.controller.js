@@ -74,7 +74,7 @@ const createExperience = async (req, res) => {
 
 const updateExperience = async (req, res) => {
   const { id } = req.params;
-  const { type, organization, organizationEn, institution, institutionEn, role, roleEn, startDate, startDateEn, endDate, endDateEn, description, descriptionEn, order, photos } = req.body;
+  const { type, organization, organizationEn, institution, institutionEn, role, roleEn, startDate, startDateEn, endDate, endDateEn, description, descriptionEn, order, existingPhotos } = req.body;
 
   const existing = await prisma.experience.findUnique({ where: { id } });
   if (!existing) {
@@ -83,13 +83,13 @@ const updateExperience = async (req, res) => {
 
   // Check if photos need to be updated
   let updatePhotosConfig = undefined;
-  if ((req.files && req.files.length > 0) || photos !== undefined) {
+  if ((req.files && req.files.length > 0) || existingPhotos !== undefined) {
     await prisma.experiencePhoto.deleteMany({ where: { experienceId: id } });
     
     let photoData = [];
-    if (photos) {
+    if (existingPhotos) {
       try {
-        const parsedPhotos = Array.isArray(photos) ? photos : JSON.parse(photos);
+        const parsedPhotos = Array.isArray(existingPhotos) ? existingPhotos : JSON.parse(existingPhotos);
         parsedPhotos.forEach((p) => {
           if (typeof p === 'string') photoData.push({ url: p });
           else if (p && p.url) photoData.push({ url: p.url, caption: p.caption || null, captionEn: p.captionEn || null });

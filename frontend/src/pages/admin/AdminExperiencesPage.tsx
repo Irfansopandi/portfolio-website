@@ -190,17 +190,21 @@ const AdminExperiencesPage = () => {
       const fd = new FormData();
       fd.append('type', form.type);
       fd.append('organization', form.organization);
+      fd.append('organizationEn', form.organizationEn);
       fd.append('institution', form.institution);
+      fd.append('institutionEn', form.institutionEn);
       fd.append('role', form.role);
       fd.append('roleEn', form.roleEn);
       fd.append('startDate', form.startDate);
+      fd.append('startDateEn', form.startDateEn);
       fd.append('endDate', form.endDate);
+      fd.append('endDateEn', form.endDateEn);
       fd.append('description', form.description);
       fd.append('descriptionEn', form.descriptionEn);
       fd.append('order', form.order);
 
-      // Append existing photos (even if empty, so backend knows to clear them if all are deleted)
-      fd.append('photos', JSON.stringify(existingPhotos));
+      // Append existing photos
+      fd.append('existingPhotos', JSON.stringify(existingPhotos));
 
       // Append new photo files
       photoFiles.forEach(item => {
