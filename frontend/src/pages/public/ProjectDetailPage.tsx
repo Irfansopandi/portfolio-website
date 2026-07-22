@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Github, ExternalLink, ArrowLeft, Calendar, Tag, X } from 'lucide-react';
+import { Github, ExternalLink, ArrowLeft, Calendar, Tag, X, Download } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { projectService } from '../../services';
 import type { Project } from '../../types';
@@ -207,8 +207,14 @@ const ProjectDetailPage = () => {
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 p-3 rounded-xl text-white border border-indigo-500/30 hover:border-indigo-500/60 transition-all btn-primary"
                 >
-                  <ExternalLink size={18} />
-                  <span className="text-sm">{t('projects.liveDemo')}</span>
+                  {project.category.toLowerCase().includes('application') && !project.category.toLowerCase().includes('web') 
+                    ? <Download size={18} />
+                    : <ExternalLink size={18} />}
+                  <span className="text-sm">
+                    {project.category.toLowerCase().includes('application') && !project.category.toLowerCase().includes('web') 
+                      ? (isEn ? 'Download App' : 'Unduh Aplikasi') 
+                      : t('projects.liveDemo')}
+                  </span>
                 </a>
               )}
             </div>

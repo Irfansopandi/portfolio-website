@@ -63,17 +63,17 @@ const createStorage = (folder) => {
     return new CloudinaryStorage({
       cloudinary,
       params: async (req, file) => {
-        const isCv = folder === 'cv';
         const ext = path.extname(file.originalname).toLowerCase();
+        const isRaw = folder === 'cv' || ['.apk', '.aab', '.zip', '.pdf', '.doc', '.docx'].includes(ext);
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
         const nameWithoutExt = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9_-]/g, '_');
         
         return {
           folder: `portfolio/${folder}`,
-          resource_type: isCv ? 'raw' : 'image',
-          public_id: isCv ? `${nameWithoutExt}-${uniqueSuffix}${ext}` : `${nameWithoutExt}-${uniqueSuffix}`,
-          allowed_formats: isCv ? undefined : ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-          transformation: isCv ? undefined : [{ quality: 'auto', fetch_format: 'auto' }],
+          resource_type: isRaw ? 'raw' : 'image',
+          public_id: isRaw ? `${nameWithoutExt}-${uniqueSuffix}${ext}` : `${nameWithoutExt}-${uniqueSuffix}`,
+          allowed_formats: isRaw ? undefined : ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+          transformation: isRaw ? undefined : [{ quality: 'auto', fetch_format: 'auto' }],
         };
       },
     });
@@ -147,4 +147,30 @@ const deleteImage = async (publicIdOrUrl) => {
   }
 };
 
-module.exports = { cloudinary, uploadImage, uploadCVFile, deleteImage };
+const uploadProjectFiles = (folder) => {
+  const storage = createStorage(folder);
+  return multer({
+    storage,
+    limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit for projects (apps can be large)
+    fileFilter: (req, file, cb) => {
+      const allowedImageMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      const allowedAppMimes = [
+        'application/vnd.android.package-archive', // apk
+        'application/zip', // zip
+        'application/x-zip-compressed',
+        'application/octet-stream'
+      ];
+      
+      const ext = path.extname(file.originalname).toLowerCase();
+      const allowedExts = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.apk', '.aab', '.zip'];
+
+      if (allowedImageMimes.includes(file.mimetype) || allowedAppMimes.includes(file.mimetype) || allowedExts.includes(ext) || file.mimetype.startsWith('image/')) {
+        cb(null, true);
+      } else {
+        cb(new Error('Jenis file tidak valid. Hanya diperbolehkan gambar atau file aplikasi (.apk, .aab, .zip).'));
+      }
+    },
+  });
+};
+
+module.exports = { cloudinary, uploadImage, uploadCVFile, deleteImage, uploadProjectFiles };

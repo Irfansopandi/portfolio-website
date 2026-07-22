@@ -27,6 +27,8 @@ const AdminProjectsPage = () => {
   const [form, setForm] = useState(defaultForm);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [appFile, setAppFile] = useState<File | null>(null);
+  const [appUploadMode, setAppUploadMode] = useState<'link' | 'file'>('link');
   const [isSaving, setIsSaving] = useState(false);
   const [search, setSearch] = useState('');
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -45,6 +47,8 @@ const AdminProjectsPage = () => {
     setForm(defaultForm);
     setImageFile(null);
     setImagePreview(null);
+    setAppFile(null);
+    setAppUploadMode('link');
     setActiveLang('id');
     setIsModalOpen(true);
   };
@@ -66,6 +70,8 @@ const AdminProjectsPage = () => {
     });
     setImagePreview(project.image || null);
     setImageFile(null);
+    setAppFile(null);
+    setAppUploadMode('link');
     setActiveLang('id');
     setIsModalOpen(true);
   };
@@ -92,6 +98,7 @@ const AdminProjectsPage = () => {
         }
       });
       if (imageFile) fd.append('image', imageFile);
+      if (appUploadMode === 'file' && appFile) fd.append('appFile', appFile);
 
       if (editingProject) {
         await projectService.update(editingProject.id, fd);
@@ -373,10 +380,43 @@ const AdminProjectsPage = () => {
                     <input type="url" className="input-dark"
                       value={form.githubUrl} onChange={e => setForm({ ...form, githubUrl: e.target.value })} />
                   </div>
-                  <div>
-                    <label className="block text-gray-400 text-sm mb-1">Demo URL</label>
-                    <input type="url" className="input-dark"
-                      value={form.demoUrl} onChange={e => setForm({ ...form, demoUrl: e.target.value })} />
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-gray-400 text-sm">
+                        {form.category.toLowerCase().includes('application') && !form.category.toLowerCase().includes('web') 
+                          ? (isGlobalId ? 'Aplikasi (Link / File)' : 'App (Link / File)')
+                          : 'Demo URL'}
+                      </label>
+                      {form.category.toLowerCase().includes('application') && !form.category.toLowerCase().includes('web') && (
+                        <div className="flex gap-1 bg-white/5 p-1 rounded-lg">
+                          <button type="button" onClick={() => setAppUploadMode('link')}
+                            className={`px-2 py-0.5 text-xs rounded transition-all ${appUploadMode === 'link' ? 'bg-indigo-500 text-white' : 'text-gray-400 hover:text-white'}`}>
+                            Link
+                          </button>
+                          <button type="button" onClick={() => setAppUploadMode('file')}
+                            className={`px-2 py-0.5 text-xs rounded transition-all ${appUploadMode === 'file' ? 'bg-indigo-500 text-white' : 'text-gray-400 hover:text-white'}`}>
+                            File
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    {appUploadMode === 'link' || !form.category.toLowerCase().includes('application') || form.category.toLowerCase().includes('web') ? (
+                      <input type="url" className="input-dark" placeholder="https://"
+                        value={form.demoUrl} onChange={e => setForm({ ...form, demoUrl: e.target.value })} />
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <label className="btn-secondary flex items-center justify-center gap-2 cursor-pointer w-full text-sm py-2">
+                          <Upload size={14} /> {appFile ? appFile.name : (isGlobalId ? 'Pilih File APK/ZIP' : 'Choose APK/ZIP')}
+                          <input type="file" accept=".apk,.aab,.zip" className="hidden"
+                            onChange={e => setAppFile(e.target.files?.[0] || null)} />
+                        </label>
+                        {(appFile || (editingProject && form.demoUrl && form.demoUrl !== editingProject.demoUrl)) && (
+                          <button type="button" onClick={() => { setAppFile(null); }} className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg">
+                            <X size={16} />
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
 

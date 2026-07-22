@@ -40,7 +40,9 @@ const createProject = async (req, res) => {
   }
 
   const slug = slugify(title, { lower: true });
-  const imageUrl = req.file?.path || null;
+  const imageUrl = req.files?.image?.[0]?.path || null;
+  const appFileUrl = req.files?.appFile?.[0]?.path || null;
+  const finalDemoUrl = appFileUrl || demoUrl;
 
   const project = await prisma.project.create({
     data: {
@@ -58,7 +60,7 @@ const createProject = async (req, res) => {
       solution: solution || null,
       solutionEn: solutionEn || null,
       githubUrl,
-      demoUrl,
+      demoUrl: finalDemoUrl,
       featured: featured === 'true' || featured === true,
       technologies: {
         create: (Array.isArray(technologies) ? technologies : JSON.parse(technologies || '[]'))
@@ -80,8 +82,10 @@ const updateProject = async (req, res) => {
     return res.status(404).json({ error: 'Proyek tidak ditemukan.' });
   }
 
-  const imageUrl = req.file?.path || existing.image;
+  const imageUrl = req.files?.image?.[0]?.path || existing.image;
   const slug = title ? slugify(title, { lower: true }) : existing.slug;
+  const appFileUrl = req.files?.appFile?.[0]?.path || null;
+  const finalDemoUrl = appFileUrl || (demoUrl !== undefined ? demoUrl : existing.demoUrl);
 
   // Delete old technologies and recreate
   await prisma.projectTechnology.deleteMany({ where: { projectId: id } });
@@ -103,7 +107,7 @@ const updateProject = async (req, res) => {
       solution: solution !== undefined ? solution : existing.solution,
       solutionEn: solutionEn !== undefined ? solutionEn : existing.solutionEn,
       githubUrl: githubUrl !== undefined ? githubUrl : existing.githubUrl,
-      demoUrl: demoUrl !== undefined ? demoUrl : existing.demoUrl,
+      demoUrl: finalDemoUrl,
       featured: featured !== undefined ? (featured === 'true' || featured === true) : existing.featured,
       technologies: {
         create: (Array.isArray(technologies) ? technologies : JSON.parse(technologies || '[]'))

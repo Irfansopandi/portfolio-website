@@ -1007,9 +1007,11 @@ const HomePage = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-10 h-10 flex items-center justify-center rounded-lg text-gray-400 hover:text-white border border-white/10 hover:border-white/30 transition-all"
-                        aria-label="Live Demo"
+                        aria-label={project.category.toLowerCase().includes('application') && !project.category.toLowerCase().includes('web') ? "Download App" : "Live Demo"}
                       >
-                        <ExternalLink size={16} />
+                        {project.category.toLowerCase().includes('application') && !project.category.toLowerCase().includes('web') 
+                          ? <Download size={16} /> 
+                          : <ExternalLink size={16} />}
                       </a>
                     )}
                   </div>
