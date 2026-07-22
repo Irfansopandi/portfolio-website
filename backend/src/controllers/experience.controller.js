@@ -126,7 +126,7 @@ const updateExperience = async (req, res) => {
       endDateEn: endDateEn !== undefined ? endDateEn : existing.endDateEn,
       description: description !== undefined ? description : existing.description,
       descriptionEn: descriptionEn !== undefined ? descriptionEn : existing.descriptionEn,
-      order: order !== undefined ? parseInt(order) : existing.order,
+      order: (order !== undefined && order !== '' && !isNaN(parseInt(order))) ? parseInt(order) : existing.order,
       ...(updatePhotosConfig && { photos: updatePhotosConfig }),
     },
     include: {
