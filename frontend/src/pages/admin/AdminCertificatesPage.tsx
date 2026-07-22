@@ -7,7 +7,7 @@ import type { Certificate } from '../../types';
 import toast from 'react-hot-toast';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 
-const defaultForm = { title: '', titleEn: '', issuer: '', date: '', credentialUrl: '' };
+const defaultForm = { title: '', titleEn: '', issuer: '', issuerEn: '', date: '', dateEn: '', credentialUrl: '' };
 
 const AdminCertificatesPage = () => {
   const { i18n } = useTranslation();
@@ -47,7 +47,9 @@ const AdminCertificatesPage = () => {
       title: item.title,
       titleEn: item.titleEn || '',
       issuer: item.issuer,
+      issuerEn: item.issuerEn || '',
       date: item.date,
+      dateEn: item.dateEn || '',
       credentialUrl: item.credentialUrl || '',
     });
     setImagePreview(item.image || null);
@@ -229,22 +231,36 @@ const AdminCertificatesPage = () => {
 
                 <div>
                   <label className="block text-gray-400 text-sm mb-1">
-                    {activeLang === 'id' ? 'Penerbit *' : 'Issuer *'}
+                    {activeLang === 'id' ? 'Penerbit (🇮🇩) *' : 'Issuer (🇬🇧) *'}
                   </label>
-                  <input type="text" className="input-dark" placeholder="Udemy, Google, AWS..."
-                    value={form.issuer}
-                    onChange={e => setForm({ ...form, issuer: e.target.value })}
-                    required />
+                  {activeLang === 'id' ? (
+                    <input type="text" className="input-dark" placeholder="Udemy, Google, AWS..."
+                      value={form.issuer}
+                      onChange={e => setForm({ ...form, issuer: e.target.value })}
+                      required />
+                  ) : (
+                    <input type="text" className="input-dark" placeholder="Udemy, Google, AWS..."
+                      value={form.issuerEn}
+                      onChange={e => setForm({ ...form, issuerEn: e.target.value })}
+                      required />
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-gray-400 text-sm mb-1">
-                    {activeLang === 'id' ? 'Tanggal *' : 'Date *'}
+                    {activeLang === 'id' ? 'Tanggal (🇮🇩) *' : 'Date (🇬🇧) *'}
                   </label>
-                  <input type="text" className="input-dark" placeholder="2023-06"
-                    value={form.date}
-                    onChange={e => setForm({ ...form, date: e.target.value })}
-                    required />
+                  {activeLang === 'id' ? (
+                    <input type="text" className="input-dark" placeholder="2023-06"
+                      value={form.date}
+                      onChange={e => setForm({ ...form, date: e.target.value })}
+                      required />
+                  ) : (
+                    <input type="text" className="input-dark" placeholder="June 2023"
+                      value={form.dateEn}
+                      onChange={e => setForm({ ...form, dateEn: e.target.value })}
+                      required />
+                  )}
                 </div>
 
                 <div>

@@ -78,10 +78,13 @@ model ProjectTechnology {
 model Education {
   id          String   @id @default(uuid())
   institution String
+  institutionEn String? @map("institution_en")
   degree      String
   degreeEn    String?  @map("degree_en")
   startDate   String   @map("start_date")
+  startDateEn String?  @map("start_date_en")
   endDate     String?  @map("end_date")
+  endDateEn   String?  @map("end_date_en")
   description String?  @db.Text
   descriptionEn String? @db.Text @map("description_en")
   logo        String?
@@ -110,8 +113,10 @@ model Certificate {
   title         String
   titleEn       String?  @map("title_en")
   issuer        String
+  issuerEn      String?  @map("issuer_en")
   image         String?
   date          String
+  dateEn        String?  @map("date_en")
   credentialUrl String?  @map("credential_url")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
@@ -153,11 +158,15 @@ model Experience {
   id           String            @id @default(uuid())
   type         String            @default("work") // "work" | "organization"
   organization String            // Nama Perusahaan / Nama Organisasi
+  organizationEn String?         @map("organization_en")
   institution  String?           // Nama Univ / Instansi
+  institutionEn String?          @map("institution_en")
   role         String            // Nama Jabatan
   roleEn       String?           @map("role_en")
   startDate    String            @map("start_date")
+  startDateEn  String?           @map("start_date_en")
   endDate      String?           @map("end_date")
+  endDateEn    String?           @map("end_date_en")
   description  String?           @db.Text
   descriptionEn String?          @db.Text @map("description_en")
   order        Int               @default(0)

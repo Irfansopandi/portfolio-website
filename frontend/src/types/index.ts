@@ -54,10 +54,13 @@ export interface ProjectTechnology {
 export interface Education {
   id: string;
   institution: string;
+  institutionEn?: string;
   degree: string;
   degreeEn?: string;
   startDate: string;
+  startDateEn?: string;
   endDate?: string;
+  endDateEn?: string;
   description?: string;
   descriptionEn?: string;
   logo?: string;
@@ -78,8 +81,10 @@ export interface Certificate {
   title: string;
   titleEn?: string;
   issuer: string;
+  issuerEn?: string;
   image?: string;
   date: string;
+  dateEn?: string;
   credentialUrl?: string;
 }
 
@@ -128,11 +133,15 @@ export interface Experience {
   id: string;
   type: 'work' | 'organization';
   organization: string;
+  organizationEn?: string;
   institution?: string;
+  institutionEn?: string;
   role: string;
   roleEn?: string;
   startDate: string;
+  startDateEn?: string;
   endDate?: string;
+  endDateEn?: string;
   description?: string;
   descriptionEn?: string;
   order: number;

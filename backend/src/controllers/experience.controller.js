@@ -19,7 +19,7 @@ const getAllExperiences = async (req, res) => {
 };
 
 const createExperience = async (req, res) => {
-  const { type, organization, institution, role, roleEn, startDate, endDate, description, descriptionEn, order, photos } = req.body;
+  const { type, organization, organizationEn, institution, institutionEn, role, roleEn, startDate, startDateEn, endDate, endDateEn, description, descriptionEn, order, photos } = req.body;
 
   if (!organization || !role || !startDate) {
     return res.status(400).json({ error: 'Nama organisasi/perusahaan, jabatan, dan tanggal mulai wajib diisi.' });
@@ -48,11 +48,15 @@ const createExperience = async (req, res) => {
     data: {
       type: type || 'work',
       organization,
+      organizationEn: organizationEn || null,
       institution: institution || null,
+      institutionEn: institutionEn || null,
       role,
       roleEn: roleEn || null,
       startDate,
+      startDateEn: startDateEn || null,
       endDate: endDate || null,
+      endDateEn: endDateEn || null,
       description: description || null,
       descriptionEn: descriptionEn || null,
       order: order ? parseInt(order) : 0,
@@ -70,7 +74,7 @@ const createExperience = async (req, res) => {
 
 const updateExperience = async (req, res) => {
   const { id } = req.params;
-  const { type, organization, institution, role, roleEn, startDate, endDate, description, descriptionEn, order, photos } = req.body;
+  const { type, organization, organizationEn, institution, institutionEn, role, roleEn, startDate, startDateEn, endDate, endDateEn, description, descriptionEn, order, photos } = req.body;
 
   const existing = await prisma.experience.findUnique({ where: { id } });
   if (!existing) {
@@ -109,13 +113,17 @@ const updateExperience = async (req, res) => {
   const experience = await prisma.experience.update({
     where: { id },
     data: {
-      type: type !== undefined ? type : existing.type,
-      organization: organization !== undefined ? organization : existing.organization,
+      type: type || existing.type,
+      organization: organization || existing.organization,
+      organizationEn: organizationEn !== undefined ? organizationEn : existing.organizationEn,
       institution: institution !== undefined ? institution : existing.institution,
-      role: role !== undefined ? role : existing.role,
+      institutionEn: institutionEn !== undefined ? institutionEn : existing.institutionEn,
+      role: role || existing.role,
       roleEn: roleEn !== undefined ? roleEn : existing.roleEn,
-      startDate: startDate !== undefined ? startDate : existing.startDate,
+      startDate: startDate || existing.startDate,
+      startDateEn: startDateEn !== undefined ? startDateEn : existing.startDateEn,
       endDate: endDate !== undefined ? endDate : existing.endDate,
+      endDateEn: endDateEn !== undefined ? endDateEn : existing.endDateEn,
       description: description !== undefined ? description : existing.description,
       descriptionEn: descriptionEn !== undefined ? descriptionEn : existing.descriptionEn,
       order: order !== undefined ? parseInt(order) : existing.order,

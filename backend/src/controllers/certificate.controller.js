@@ -8,7 +8,7 @@ const getAllCertificates = async (req, res) => {
 };
 
 const createCertificate = async (req, res) => {
-  const { title, titleEn, issuer, date, credentialUrl } = req.body;
+  const { title, titleEn, issuer, issuerEn, date, dateEn, credentialUrl } = req.body;
 
   if (!title || !issuer || !date) {
     return res.status(400).json({ error: 'Judul, penerbit, dan tanggal wajib diisi.' });
@@ -21,8 +21,10 @@ const createCertificate = async (req, res) => {
       title,
       titleEn: titleEn || null,
       issuer,
+      issuerEn: issuerEn || null,
       image: imageUrl,
       date,
+      dateEn: dateEn || null,
       credentialUrl,
     },
   });
@@ -32,7 +34,7 @@ const createCertificate = async (req, res) => {
 
 const updateCertificate = async (req, res) => {
   const { id } = req.params;
-  const { title, titleEn, issuer, date, credentialUrl } = req.body;
+  const { title, titleEn, issuer, issuerEn, date, dateEn, credentialUrl } = req.body;
 
   const existing = await prisma.certificate.findUnique({ where: { id } });
   if (!existing) {
@@ -47,8 +49,10 @@ const updateCertificate = async (req, res) => {
       title: title || existing.title,
       titleEn: titleEn !== undefined ? titleEn : existing.titleEn,
       issuer: issuer || existing.issuer,
+      issuerEn: issuerEn !== undefined ? issuerEn : existing.issuerEn,
       image: imageUrl,
       date: date || existing.date,
+      dateEn: dateEn !== undefined ? dateEn : existing.dateEn,
       credentialUrl: credentialUrl !== undefined ? credentialUrl : existing.credentialUrl,
     },
   });

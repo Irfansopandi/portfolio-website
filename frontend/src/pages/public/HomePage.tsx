@@ -723,16 +723,16 @@ const HomePage = () => {
                             )}
                           </div>
                           <span className="text-xs font-mono text-indigo-400 px-2 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10">
-                            {edu.startDate} - {edu.endDate || t('education.present')}
+                            {(isEn ? edu.startDateEn : null) || edu.startDate} - {(isEn ? edu.endDateEn : null) || edu.endDate || t('education.present')}
                           </span>
                         </div>
 
-                        <h3 className="text-xl font-bold text-white mb-1">{edu.institution}</h3>
+                        <h3 className="text-xl font-bold text-white mb-1">{(isEn ? edu.institutionEn : null) || edu.institution}</h3>
                         <p className="text-indigo-400 font-medium mb-3">{(isEn ? edu.degreeEn : null) || edu.degree}</p>
 
                         <div className="flex items-center gap-2 text-gray-500 text-sm mb-3">
                           <Calendar size={14} className="text-indigo-400" />
-                          <span>{edu.startDate} — {edu.endDate || t('education.present')}</span>
+                          <span>{(isEn ? edu.startDateEn : null) || edu.startDate} — {(isEn ? edu.endDateEn : null) || edu.endDate || t('education.present')}</span>
                         </div>
 
                         {((isEn ? edu.descriptionEn : null) || edu.description) && (
@@ -1097,12 +1097,12 @@ const HomePage = () => {
 
                   <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
                     <Building size={13} className="text-indigo-400 flex-shrink-0" />
-                    <span className="truncate">{cert.issuer}</span>
+                    <span className="truncate">{(isEn ? cert.issuerEn : null) || cert.issuer}</span>
                   </div>
 
                   <div className="flex items-center gap-2 text-gray-500 text-sm mb-4">
                     <Calendar size={13} className="text-indigo-400 flex-shrink-0" />
-                    <span>{cert.date}</span>
+                    <span>{(isEn ? cert.dateEn : null) || cert.date}</span>
                   </div>
 
                   {cert.credentialUrl && cert.credentialUrl.trim() !== '' && cert.credentialUrl !== 'null' && cert.credentialUrl !== 'undefined' && cert.credentialUrl !== '#' && (
@@ -1157,8 +1157,8 @@ const HomePage = () => {
                 )}
                 <div className="p-6 bg-black/40">
                   <h3 className="text-2xl font-bold text-white mb-2">{(isEn ? selectedCertificate.titleEn : null) || selectedCertificate.title}</h3>
-                  <p className="text-indigo-400 mb-1">{selectedCertificate.issuer}</p>
-                  <p className="text-gray-500 mb-4">{selectedCertificate.date}</p>
+                  <p className="text-indigo-400 mb-1">{(isEn ? selectedCertificate.issuerEn : null) || selectedCertificate.issuer}</p>
+                  <p className="text-gray-500 mb-4">{(isEn ? selectedCertificate.dateEn : null) || selectedCertificate.date}</p>
                   {selectedCertificate.credentialUrl && selectedCertificate.credentialUrl.trim() !== '' && selectedCertificate.credentialUrl !== 'null' && selectedCertificate.credentialUrl !== 'undefined' && selectedCertificate.credentialUrl !== '#' && (
                     <a href={selectedCertificate.credentialUrl} target="_blank" rel="noopener noreferrer" className="btn-primary inline-flex items-center gap-2">
                       <ExternalLink size={16} />
@@ -1261,20 +1261,20 @@ const HomePage = () => {
 
                       <div className="flex items-center gap-1.5 text-xs text-indigo-400 font-mono bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">
                         <Calendar size={13} />
-                        <span>{exp.startDate} — {exp.endDate || t('experiences.present')}</span>
+                        <span>{(isEn ? exp.startDateEn : null) || exp.startDate} — {(isEn ? exp.endDateEn : null) || exp.endDate || t('experiences.present')}</span>
                       </div>
                     </div>
 
                     {/* Organization / Company Name */}
                     <h3 className="text-2xl font-bold text-white mb-1 group-hover:text-indigo-300 transition-colors">
-                      {exp.organization}
+                      {(isEn ? exp.organizationEn : null) || exp.organization}
                     </h3>
 
                     {/* Institution / Univ */}
-                    {exp.institution && (
+                    {((isEn ? exp.institutionEn : null) || exp.institution) && (
                       <div className="flex items-center gap-2 text-gray-400 text-sm mb-3">
                         <Building size={14} className="text-indigo-400 flex-shrink-0" />
-                        <span>{exp.institution}</span>
+                        <span>{(isEn ? exp.institutionEn : null) || exp.institution}</span>
                       </div>
                     )}
 

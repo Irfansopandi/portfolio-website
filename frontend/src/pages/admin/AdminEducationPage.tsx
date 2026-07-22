@@ -9,10 +9,13 @@ import { ConfirmDialog } from '../../components/ConfirmDialog';
 
 const defaultForm = {
   institution: '',
+  institutionEn: '',
   degree: '',
   degreeEn: '',
   startDate: '',
+  startDateEn: '',
   endDate: '',
+  endDateEn: '',
   description: '',
   descriptionEn: '',
   order: '0',
@@ -52,10 +55,13 @@ const AdminEducationPage = () => {
     setEditing(item);
     setForm({
       institution: item.institution,
+      institutionEn: item.institutionEn || '',
       degree: item.degree,
       degreeEn: item.degreeEn || '',
       startDate: item.startDate,
+      startDateEn: item.startDateEn || '',
       endDate: item.endDate || '',
+      endDateEn: item.endDateEn || '',
       description: item.description || '',
       descriptionEn: item.descriptionEn || '',
       order: String(item.order),
@@ -201,12 +207,19 @@ const AdminEducationPage = () => {
               <form onSubmit={handleSubmit} className="p-6 space-y-4">
                 <div>
                   <label className="block text-gray-400 text-sm mb-1">
-                    {activeLang === 'id' ? 'Institusi *' : 'Institution *'}
+                    {activeLang === 'id' ? 'Institusi (🇮🇩) *' : 'Institution (🇬🇧) *'}
                   </label>
-                  <input type="text" className="input-dark" placeholder={activeLang === 'id' ? "Contoh: Universitas Indonesia" : "e.g. Harvard University"}
-                    value={form.institution}
-                    onChange={e => setForm({ ...form, institution: e.target.value })}
-                    required />
+                  {activeLang === 'id' ? (
+                    <input type="text" className="input-dark" placeholder="Contoh: Universitas Indonesia"
+                      value={form.institution}
+                      onChange={e => setForm({ ...form, institution: e.target.value })}
+                      required />
+                  ) : (
+                    <input type="text" className="input-dark" placeholder="e.g. Harvard University"
+                      value={form.institutionEn}
+                      onChange={e => setForm({ ...form, institutionEn: e.target.value })}
+                      required />
+                  )}
                 </div>
 
                 <div>
@@ -229,20 +242,33 @@ const AdminEducationPage = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-gray-400 text-sm mb-1">
-                      {activeLang === 'id' ? 'Tahun Mulai *' : 'Start Year *'}
+                      {activeLang === 'id' ? 'Tahun Mulai (🇮🇩) *' : 'Start Year (🇬🇧) *'}
                     </label>
-                    <input type="text" className="input-dark" placeholder="2020"
-                      value={form.startDate}
-                      onChange={e => setForm({ ...form, startDate: e.target.value })}
-                      required />
+                    {activeLang === 'id' ? (
+                      <input type="text" className="input-dark" placeholder="2020"
+                        value={form.startDate}
+                        onChange={e => setForm({ ...form, startDate: e.target.value })}
+                        required />
+                    ) : (
+                      <input type="text" className="input-dark" placeholder="2020"
+                        value={form.startDateEn}
+                        onChange={e => setForm({ ...form, startDateEn: e.target.value })}
+                        required />
+                    )}
                   </div>
                   <div>
                     <label className="block text-gray-400 text-sm mb-1">
-                      {activeLang === 'id' ? 'Tahun Selesai' : 'End Year'}
+                      {activeLang === 'id' ? 'Tahun Selesai (🇮🇩)' : 'End Year (🇬🇧)'}
                     </label>
-                    <input type="text" className="input-dark" placeholder={activeLang === 'id' ? "2024 / Sekarang" : "2024 / Present"}
-                      value={form.endDate}
-                      onChange={e => setForm({ ...form, endDate: e.target.value })} />
+                    {activeLang === 'id' ? (
+                      <input type="text" className="input-dark" placeholder="2024 / Sekarang"
+                        value={form.endDate}
+                        onChange={e => setForm({ ...form, endDate: e.target.value })} />
+                    ) : (
+                      <input type="text" className="input-dark" placeholder="2024 / Present"
+                        value={form.endDateEn}
+                        onChange={e => setForm({ ...form, endDateEn: e.target.value })} />
+                    )}
                   </div>
                 </div>
 

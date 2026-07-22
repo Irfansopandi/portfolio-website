@@ -8,7 +8,7 @@ const getAllEducation = async (req, res) => {
 };
 
 const createEducation = async (req, res) => {
-  const { institution, degree, degreeEn, startDate, endDate, description, descriptionEn, order } = req.body;
+  const { institution, institutionEn, degree, degreeEn, startDate, startDateEn, endDate, endDateEn, description, descriptionEn, order } = req.body;
 
   if (!institution || !degree || !startDate) {
     return res.status(400).json({ error: 'Institusi, gelar, dan tanggal mulai wajib diisi.' });
@@ -19,10 +19,13 @@ const createEducation = async (req, res) => {
   const education = await prisma.education.create({
     data: {
       institution,
+      institutionEn: institutionEn || null,
       degree,
       degreeEn: degreeEn || null,
       startDate,
+      startDateEn: startDateEn || null,
       endDate,
+      endDateEn: endDateEn || null,
       description,
       descriptionEn: descriptionEn || null,
       logo: logoUrl,
@@ -35,7 +38,7 @@ const createEducation = async (req, res) => {
 
 const updateEducation = async (req, res) => {
   const { id } = req.params;
-  const { institution, degree, degreeEn, startDate, endDate, description, descriptionEn, order } = req.body;
+  const { institution, institutionEn, degree, degreeEn, startDate, startDateEn, endDate, endDateEn, description, descriptionEn, order } = req.body;
 
   const existing = await prisma.education.findUnique({ where: { id } });
   if (!existing) {
@@ -48,10 +51,13 @@ const updateEducation = async (req, res) => {
     where: { id },
     data: {
       institution: institution || existing.institution,
+      institutionEn: institutionEn !== undefined ? institutionEn : existing.institutionEn,
       degree: degree || existing.degree,
       degreeEn: degreeEn !== undefined ? degreeEn : existing.degreeEn,
       startDate: startDate || existing.startDate,
+      startDateEn: startDateEn !== undefined ? startDateEn : existing.startDateEn,
       endDate: endDate !== undefined ? endDate : existing.endDate,
+      endDateEn: endDateEn !== undefined ? endDateEn : existing.endDateEn,
       description: description !== undefined ? description : existing.description,
       descriptionEn: descriptionEn !== undefined ? descriptionEn : existing.descriptionEn,
       logo: logoUrl,

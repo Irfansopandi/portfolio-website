@@ -10,11 +10,15 @@ import { ConfirmDialog } from '../../components/ConfirmDialog';
 const defaultForm = {
   type: 'work' as 'work' | 'organization',
   organization: '',
+  organizationEn: '',
   institution: '',
+  institutionEn: '',
   role: '',
   roleEn: '',
   startDate: '',
+  startDateEn: '',
   endDate: '',
+  endDateEn: '',
   description: '',
   descriptionEn: '',
   order: '0',
@@ -133,11 +137,15 @@ const AdminExperiencesPage = () => {
     setForm({
       type: item.type,
       organization: item.organization,
+      organizationEn: item.organizationEn || '',
       institution: item.institution || '',
+      institutionEn: item.institutionEn || '',
       role: item.role,
       roleEn: item.roleEn || '',
       startDate: item.startDate,
+      startDateEn: item.startDateEn || '',
       endDate: item.endDate || '',
+      endDateEn: item.endDateEn || '',
       description: item.description || '',
       descriptionEn: item.descriptionEn || '',
       order: String(item.order || 0),
@@ -474,31 +482,52 @@ const AdminExperiencesPage = () => {
                 <div>
                   <label className="block text-gray-400 text-sm mb-1 font-medium">
                     {form.type === 'work' 
-                      ? (activeLang === 'id' ? 'Nama Perusahaan *' : 'Company Name *') 
-                      : (activeLang === 'id' ? 'Nama Organisasi *' : 'Organization Name *')}
+                      ? (activeLang === 'id' ? 'Nama Perusahaan (🇮🇩) *' : 'Company Name (🇬🇧) *') 
+                      : (activeLang === 'id' ? 'Nama Organisasi (🇮🇩) *' : 'Organization Name (🇬🇧) *')}
                   </label>
-                  <input
-                    type="text"
-                    className="input-dark"
-                    placeholder={form.type === 'work' ? 'e.g. PT Maju Bersama' : 'e.g. Himpunan Mahasiswa Teknik Informatika (HMTI)'}
-                    value={form.organization}
-                    onChange={e => setForm({ ...form, organization: e.target.value })}
-                    required
-                  />
+                  {activeLang === 'id' ? (
+                    <input
+                      type="text"
+                      className="input-dark"
+                      placeholder={form.type === 'work' ? 'e.g. PT Maju Bersama' : 'e.g. Himpunan Mahasiswa Teknik Informatika (HMTI)'}
+                      value={form.organization}
+                      onChange={e => setForm({ ...form, organization: e.target.value })}
+                      required
+                    />
+                  ) : (
+                    <input
+                      type="text"
+                      className="input-dark"
+                      placeholder={form.type === 'work' ? 'e.g. Maju Bersama LLC' : 'e.g. Informatics Engineering Student Association'}
+                      value={form.organizationEn}
+                      onChange={e => setForm({ ...form, organizationEn: e.target.value })}
+                      required
+                    />
+                  )}
                 </div>
 
                 {/* Institution / Univ */}
                 <div>
                   <label className="block text-gray-400 text-sm mb-1 font-medium">
-                    {activeLang === 'id' ? 'Nama Univ / Sekolah / Kampus' : 'University / School / Campus Name'}
+                    {activeLang === 'id' ? 'Nama Univ / Sekolah / Kampus (🇮🇩)' : 'University / School / Campus Name (🇬🇧)'}
                   </label>
-                  <input
-                    type="text"
-                    className="input-dark"
-                    placeholder={activeLang === 'id' ? 'e.g. Universitas Bina Sarana Informatika' : 'e.g. Bina Sarana Informatika University'}
-                    value={form.institution}
-                    onChange={e => setForm({ ...form, institution: e.target.value })}
-                  />
+                  {activeLang === 'id' ? (
+                    <input
+                      type="text"
+                      className="input-dark"
+                      placeholder="e.g. Universitas Bina Sarana Informatika"
+                      value={form.institution}
+                      onChange={e => setForm({ ...form, institution: e.target.value })}
+                    />
+                  ) : (
+                    <input
+                      type="text"
+                      className="input-dark"
+                      placeholder="e.g. Bina Sarana Informatika University"
+                      value={form.institutionEn}
+                      onChange={e => setForm({ ...form, institutionEn: e.target.value })}
+                    />
+                  )}
                 </div>
 
                 {/* Position / Role */}
@@ -531,28 +560,49 @@ const AdminExperiencesPage = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-gray-400 text-sm mb-1 font-medium">
-                      {activeLang === 'id' ? 'Tanggal Mulai (Bulan & Tahun) *' : 'Start Date (Month & Year) *'}
+                      {activeLang === 'id' ? 'Tanggal Mulai (🇮🇩) *' : 'Start Date (🇬🇧) *'}
                     </label>
-                    <input
-                      type="text"
-                      className="input-dark"
-                      placeholder={activeLang === 'id' ? 'e.g. Januari 2022' : 'e.g. January 2022'}
-                      value={form.startDate}
-                      onChange={e => setForm({ ...form, startDate: e.target.value })}
-                      required
-                    />
+                    {activeLang === 'id' ? (
+                      <input
+                        type="text"
+                        className="input-dark"
+                        placeholder="e.g. Januari 2022"
+                        value={form.startDate}
+                        onChange={e => setForm({ ...form, startDate: e.target.value })}
+                        required
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        className="input-dark"
+                        placeholder="e.g. January 2022"
+                        value={form.startDateEn}
+                        onChange={e => setForm({ ...form, startDateEn: e.target.value })}
+                        required
+                      />
+                    )}
                   </div>
                   <div>
                     <label className="block text-gray-400 text-sm mb-1 font-medium">
-                      {activeLang === 'id' ? 'Tanggal Selesai' : 'End Date'}
+                      {activeLang === 'id' ? 'Tanggal Selesai (🇮🇩)' : 'End Date (🇬🇧)'}
                     </label>
-                    <input
-                      type="text"
-                      className="input-dark"
-                      placeholder={activeLang === 'id' ? 'e.g. Desember 2023 / Sekarang' : 'e.g. December 2023 / Present'}
-                      value={form.endDate}
-                      onChange={e => setForm({ ...form, endDate: e.target.value })}
-                    />
+                    {activeLang === 'id' ? (
+                      <input
+                        type="text"
+                        className="input-dark"
+                        placeholder="e.g. Desember 2023 / Sekarang"
+                        value={form.endDate}
+                        onChange={e => setForm({ ...form, endDate: e.target.value })}
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        className="input-dark"
+                        placeholder="e.g. December 2023 / Present"
+                        value={form.endDateEn}
+                        onChange={e => setForm({ ...form, endDateEn: e.target.value })}
+                      />
+                    )}
                   </div>
                 </div>
 
