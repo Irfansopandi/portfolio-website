@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Github, ExternalLink, ArrowLeft, Calendar, Tag } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Github, ExternalLink, ArrowLeft, Calendar, Tag, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { projectService } from '../../services';
 import type { Project } from '../../types';
@@ -12,6 +12,7 @@ const ProjectDetailPage = () => {
   const isEn = i18n.language === 'en';
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isPhotoOpen, setIsPhotoOpen] = useState(false);
 
   useEffect(() => {
     if (slug) {
@@ -62,14 +63,53 @@ const ProjectDetailPage = () => {
 
         {/* Hero image */}
         {project.image && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8 rounded-2xl overflow-hidden"
-            style={{ border: '1px solid rgba(99,102,241,0.3)' } as any}
-          >
-            <img src={project.image} alt={project.title} className="w-full h-80 object-cover" />
-          </motion.div>
+          <>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8 rounded-2xl overflow-hidden cursor-pointer relative group"
+              style={{ border: '1px solid rgba(99,102,241,0.3)' } as any}
+              onClick={() => setIsPhotoOpen(true)}
+            >
+              <img src={project.image} alt={project.title} className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-300" />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <span className="text-sm text-white font-mono bg-black/60 px-3 py-1 rounded">{isEn ? 'View' : 'Lihat'}</span>
+              </div>
+            </motion.div>
+
+            {/* Lightbox Modal */}
+            <AnimatePresence>
+              {isPhotoOpen && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+                  onClick={() => setIsPhotoOpen(false)}
+                >
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.9, opacity: 0 }}
+                    className="glass-card max-w-5xl w-full overflow-hidden relative"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      onClick={() => setIsPhotoOpen(false)}
+                      className="absolute top-4 right-4 bg-black/60 hover:bg-black text-white p-2 rounded-full z-10 transition-colors"
+                    >
+                      <X size={20} />
+                    </button>
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="w-full max-h-[85vh] object-contain bg-black/50"
+                    />
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </>
         )}
 
         <div className="grid lg:grid-cols-3 gap-8">

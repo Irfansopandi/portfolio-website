@@ -1066,11 +1066,16 @@ const HomePage = () => {
               >
                 <div className="relative h-44 overflow-hidden">
                   {cert.image ? (
-                    <img
-                      src={cert.image}
-                      alt={cert.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
+                    <>
+                      <img
+                        src={cert.image}
+                        alt={cert.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
+                        <span className="text-sm text-white font-mono bg-black/60 px-3 py-1 rounded">{isEn ? 'View' : 'Lihat'}</span>
+                      </div>
+                    </>
                   ) : (
                     <div
                       className="w-full h-full flex flex-col items-center justify-center gap-3"
@@ -1080,7 +1085,7 @@ const HomePage = () => {
                       <p className="text-indigo-300 text-xs font-mono">Certificate</p>
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
                 </div>
 
                 <div className="p-5">
@@ -1129,20 +1134,26 @@ const HomePage = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+              className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
               onClick={() => setSelectedCertificate(null)}
             >
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="glass-card max-w-2xl w-full overflow-hidden"
+                className="glass-card max-w-4xl w-full overflow-hidden relative"
                 onClick={(e) => e.stopPropagation()}
               >
+                <button
+                  onClick={() => setSelectedCertificate(null)}
+                  className="absolute top-4 right-4 bg-black/60 hover:bg-black text-white p-2 rounded-full z-10 transition-colors"
+                >
+                  <X size={20} />
+                </button>
                 {selectedCertificate.image && (
-                  <img src={selectedCertificate.image} alt={selectedCertificate.title} className="w-full h-64 object-cover" />
+                  <img src={selectedCertificate.image} alt={selectedCertificate.title} className="w-full max-h-[65vh] object-contain bg-black/50" />
                 )}
-                <div className="p-6">
+                <div className="p-6 bg-black/40">
                   <h3 className="text-2xl font-bold text-white mb-2">{(isEn ? selectedCertificate.titleEn : null) || selectedCertificate.title}</h3>
                   <p className="text-indigo-400 mb-1">{selectedCertificate.issuer}</p>
                   <p className="text-gray-500 mb-4">{selectedCertificate.date}</p>
